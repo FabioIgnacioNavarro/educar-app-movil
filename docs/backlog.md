@@ -10,7 +10,7 @@ Duración Planificada: 6 Sprints semanales (44 días calendario / 90 horas hombr
 
 | ID | Sprint | Historia de Usuario / Tarea | Prioridad | Estado | Responsables | DoD / Criterio de Aceptación |
 | :--- | :---: | :--- | :---: | :---: | :--- | :--- |
-| **CHORE-01** | Sprint 1 | Configuración del entorno base, arquitectura y documentación (#1) | Alta | en progreso | Navarro / Echeverría | Expo TS configurado, AGENTS.md, ADRs, contratos y typecheck en verde |
+| **CHORE-01** | Sprint 1 | Configuración del entorno base, arquitectura y documentación (#1) | Alta | en revisión | Navarro / Echeverría | Expo TS configurado, AGENTS.md, ADRs, contratos y typecheck en verde |
 | **HU_M01** | Sprint 1 | Iniciar y cerrar sesión en la app móvil con JWT | Alta | `pendiente` | Navarro / Echeverría | Token guardado en SecureStore, sesión persistente, guard por rol |
 | **HU_M02** | Sprint 2 | Consultar listado de cuotas pendientes y por vencer | Alta | `pendiente` | Navarro / Echeverría | Filtro por hijos propios, indicadores de estado visual |
 | **HU_M03** | Sprint 2 | Consultar historial completo de pagos | Media | `pendiente` | Navarro / Echeverría | Pagos ordenados por fecha, detalle con comprobantes |
