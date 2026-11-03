@@ -13,9 +13,9 @@ Duración Planificada: 6 Sprints semanales (44 días calendario / 90 horas hombr
 | **CHORE-01** | Sprint 1 | Configuración del entorno base, arquitectura y documentación (#1) | Alta | `terminado` | Navarro / Echeverría | Expo TS configurado, AGENTS.md, ADRs, contratos y typecheck en verde |
 | **FIX-01** | Sprint 1 | Corregir incompatibilidad de react-native-gesture-handler (#4) | Alta | `terminado` | Navarro / Echeverría | Versiones nativas fijadas con expo install, expo-doctor 20/20 |
 | **HU_M01** | Sprint 1 | Iniciar y cerrar sesión en la app móvil con JWT (#3) | Alta | `terminado` | Navarro / Echeverría | Token en SecureStore, sesión persistente, guard por rol, verificado en dispositivo real |
-| **HU_M02** | Sprint 2 & 3 | Consultar listado de cuotas pendientes y por vencer | Alta | `pendiente` | Navarro | Filtro por hijos propios, badges de estado visual, detalle de cuota |
-| **HU_M03** | Sprint 2 & 3 | Consultar historial completo de pagos | Media | `pendiente` | Navarro | Pagos ordenados por fecha, desglose de montos y comprobantes asociados |
-| **HU_M04** | Sprint 2 & 3 | Cargar comprobante de transferencia (PDF/imagen) | Alta | `pendiente` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a factura y validación de formato |
+| **HU_M02** | Sprint 2 & 3 | Consultar listado de cuotas pendientes y por vencer (#7) | Alta | `pendiente` | Navarro | Filtro por hijos propios, badges de estado visual, detalle de cuota |
+| **HU_M03** | Sprint 2 & 3 | Consultar historial completo de pagos (#8) | Media | `pendiente` | Navarro | Pagos ordenados por fecha, desglose de montos y comprobantes asociados |
+| **HU_M04** | Sprint 2 & 3 | Cargar comprobante de transferencia (PDF/imagen) (#9) | Alta | `pendiente` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a factura y validación de formato |
 | **HU_M05** | Sprint 4 | Consultar inscripciones a deportes, transporte y comedor | Media | `pendiente` | Navarro / Echeverría | Límite máx. 2 deportes, recorrido asignado y valores vigentes |
 | **HU_M06** | Sprint 5 | Recibir notificación de factura mensual emitida | Alta | `pendiente` | Navarro / Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto |
 | **HU_M07** | Sprint 5 | Recibir recordatorio automático de deuda (día 20) | Media | `pendiente` | Navarro / Echeverría | Tarea día 20, solo a tutores con deuda, monto pendiente |
@@ -39,21 +39,21 @@ Duración Planificada: 6 Sprints semanales (44 días calendario / 90 horas hombr
 ### 🔹 Sprints 2 & 3 (Unificado) — Gestión de Cuotas, Historial y Carga de Comprobantes Multipart (Semanas 2 y 3)
 
 > **División de Trabajo en Paralelo:**
-> - **Eje Frontend Móvil (Fabio Navarro):** Cuotas pendientes (`HU_M02`), detalle por cuota y filtrado, e historial de pagos (`HU_M03`).
-> - **Eje Carga & Backend (Maximiliano Echeverría):** Selector y carga multipart de comprobantes (`HU_M04`) y soporte de endpoints API en `educar_pagina` (`GET /api/cuotas/` y `POST /api/comprobantes/`).
+> - **Eje Frontend Móvil (Fabio Navarro):** Cuotas pendientes (`HU_M02` #7), detalle por cuota y filtrado, e historial de pagos (`HU_M03` #8).
+> - **Eje Carga & Backend (Maximiliano Echeverría):** Selector y carga multipart de comprobantes (`HU_M04` #9) y soporte de endpoints API en `educar_pagina` (`GET /api/cuotas/` y `POST /api/comprobantes/`).
 
 #### Tareas Eje A (Fabio Navarro):
 - [ ] **CHORE-03:** Tarjetas de cuotas y estados visuales en UI (`pendiente`, `parcial`, `pagada`, `vencida`).
-- [ ] **HU_M02:** Consumo de `GET /api/cuotas/` con aislamiento por hijos del tutor (`RNF_M04`).
-- [ ] **HU_M02:** Pantalla/modal de detalle de cuota con desglose de conceptos (cuota base, servicios).
-- [ ] **HU_M02:** Implementación de filtro por alumno y período en el cliente.
-- [ ] **HU_M03:** Pantalla de historial completo de pagos ordenados cronológicamente con montos y comprobantes asociados.
+- [ ] **HU_M02:** Consumo de `GET /api/cuotas/` con aislamiento por hijos del tutor (`RNF_M04`) (#7).
+- [ ] **HU_M02:** Pantalla/modal de detalle de cuota con desglose de conceptos (cuota base, servicios) (#7).
+- [ ] **HU_M02:** Implementación de filtro por alumno y período en el cliente (#7).
+- [ ] **HU_M03:** Pantalla de historial completo de pagos ordenados cronológicamente con montos y comprobantes asociados (#8).
 
 #### Tareas Eje B (Maximiliano Echeverría):
 - [ ] **CHORE-04:** Wireframes de selector de comprobantes y vista previa en móvil.
-- [ ] **HU_M04:** Integración de `expo-document-picker` y `expo-image-picker` para adjuntar PDF/imágenes.
-- [ ] **HU_M04:** Consumo de `POST /api/comprobantes/` con envío multipart `{ uri, name, type }`.
-- [ ] **HU_M04:** Asociación del comprobante a la factura correspondiente y confirmación visual.
+- [ ] **HU_M04:** Integración de `expo-document-picker` y `expo-image-picker` para adjuntar PDF/imágenes (#9).
+- [ ] **HU_M04:** Consumo de `POST /api/comprobantes/` con envío multipart `{ uri, name, type }` (#9).
+- [ ] **HU_M04:** Asociación del comprobante a la factura correspondiente y confirmación visual (#9).
 - [ ] **BACKEND:** Endpoint `GET /api/cuotas/` con filtrado por rol Tutor en `educar_pagina`.
 - [ ] **BACKEND:** Endpoint `POST /api/comprobantes/` receptor de archivos multipart en `educar_pagina`.
 
@@ -76,7 +76,7 @@ Duración Planificada: 6 Sprints semanales (44 días calendario / 90 horas hombr
 ### 🔹 Sprint 6 — Reportes Móviles, Pruebas Integrales y Despliegue (Semana 6)
 - [ ] **HU_M08:** Reporte de facturas y comprobantes por rango de fechas (Tutor).
 - [ ] **HU_M09:** Historial de deuda discriminado por ítems (Tutor).
-- [ ] **HU_M10:** Reportes administrativos móviles (Ingresos, recaudación, estados de deuda).
+- [ ] **HU_M10:** Reportes administrativos móviles (Admin).
 - [ ] **CHORE-07:** Pruebas integrales en emulador Android y dispositivo físico real.
 - [ ] **CHORE-08:** Compilación de APK de vista previa mediante EAS Build (`eas build -p android`).
 - [ ] **DOC-01:** Manual de usuario móvil y entrega final.
