@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import { create as createAxios, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
 import { getAccessToken, clearAuthStorage } from "../utils/storage";
 
 /**
@@ -16,7 +16,7 @@ class ApiClientSingleton {
         process.env.EXPO_PUBLIC_API_URL || "http://10.0.2.2:8000/api";
       const timeout = Number(process.env.EXPO_PUBLIC_API_TIMEOUT) || 10000;
 
-      ApiClientSingleton.instance = axios.create({
+      ApiClientSingleton.instance = createAxios({
         baseURL,
         timeout,
         headers: {

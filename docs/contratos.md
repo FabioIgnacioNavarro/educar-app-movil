@@ -1,78 +1,61 @@
 # Contratos de API REST (Django REST Framework ↔ App Móvil)
 
-Este documento especifica formalmente los contratos HTTP entre el backend Django (`educar_pagina`) y la aplicación móvil (`educar-app-movil`).
+Este documento especifica la comunicación entre el backend Django y la aplicación móvil. La autenticación descrita aquí ya está implementada en `mobile_api`; los módulos financieros que siguen son contratos planificados y requieren sus endpoints en Django antes de poder usarse desde la app.
 
-Base URL en desarrollo: `http://10.0.2.2:8000/api` (emulador Android) o `http://127.0.0.1:8000/api` (Playwright / local).
+Base URL en desarrollo: `http://10.0.2.2:8000/api/` (emulador Android) o `http://127.0.0.1:8000/api/` (pruebas locales). En producción se usa el dominio HTTPS del sitio seguido por `/api/`.
 
 ---
 
 ## 1. Módulo Autenticación
 
 ### `POST /api/auth/login/`
-Permite al usuario iniciar sesión con sus credenciales institucionales.
+Autentica un padre/tutor o administrador con las credenciales del sitio.
+
 - **Autenticación:** Pública.
 - **Request Body:**
   ```json
   {
-    "usuario": "perez_juan",
-    "password": "miPasswordSegura123"
+    "identifier": "usuario-o-correo",
+    "password": "contraseña"
   }
   ```
 - **Response `200 OK`:**
   ```json
   {
-    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "access": "<jwt>",
+    "token_type": "Bearer",
+    "expires_in": 28800,
     "user": {
       "id": 14,
-      "nombre_usuario": "perez_juan",
+      "username": "perez_juan",
+      "name": "Juan Pérez",
       "email": "juan.perez@email.com",
-      "nombre_completo": "Juan Pérez",
-      "rol": "Padre/Tutor",
-      "tutor_id": 5
+      "role": "padre"
     }
   }
   ```
-- **Response `401 Unauthorized`:**
-  ```json
-  {
-    "detail": "Credenciales inválidas o usuario inactivo."
-  }
-  ```
+- **Roles devueltos por Django:** `padre` y `administrativo`.
+- **Errores:** `400` si faltan datos; `401` si las credenciales no coinciden; `403` si la cuenta está inactiva o el rol no está habilitado.
 
----
+### `GET /api/auth/me/`
+Devuelve los datos actuales del usuario y valida que el token siga vigente.
+
+- **Autenticación:** `Authorization: Bearer <access_token>`.
+- **Response `200 OK`:** `{ "user": { "id": 14, "username": "perez_juan", "name": "Juan Pérez", "email": "juan.perez@email.com", "role": "padre" } }`.
 
 ### `POST /api/auth/logout/`
-Invalida el token de refresco en el servidor.
-- **Autenticación:** `Bearer <access_token>`.
-- **Request Body:**
-  ```json
-  {
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-  ```
-- **Response `200 OK` / `204 No Content`**
+Revoca en el servidor la sesión asociada al token.
+
+- **Autenticación:** `Authorization: Bearer <access_token>`.
+- **Request Body:** vacío.
+- **Response:** `204 No Content`.
+
+La API entrega un token de acceso con duración de 8 horas y no entrega token `refresh`. La app guarda el acceso en SecureStore, valida la sesión con `/auth/me/` al abrirse y llama a `/auth/logout/` al salir.
+
+### Recuperación de contraseña
+`POST /api/auth/password-reset/` figura como necesidad futura, pero todavía no está implementado en el backend.
 
 ---
-
-### `POST /api/auth/password-reset/`
-Solicita recuperación de contraseña mediante correo electrónico institucional.
-- **Autenticación:** Pública.
-- **Request Body:**
-  ```json
-  {
-    "email": "juan.perez@email.com"
-  }
-  ```
-- **Response `200 OK`:**
-  ```json
-  {
-    "message": "Si el correo está registrado, se ha enviado un enlace de recuperación."
-  }
-  ```
-
----
-
 ## 2. Módulo Cuotas e Historial Financiero
 
 ### `GET /api/cuotas/`

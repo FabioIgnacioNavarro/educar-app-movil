@@ -33,15 +33,15 @@ export interface CuotaModel {
 export interface DetalleCuotaModel extends CuotaModel {
   discriminacion: {
     cuotaBase: number;
-    deportes: Array<{ nombre: string; monto: number }>;
+    deportes: { nombre: string; monto: number }[];
     transporte?: { recorrido: string; monto: number } | null;
     comedor?: { monto: number } | null;
   };
-  comprobantes: Array<{
+  comprobantes: {
     id: number;
     fechaPago: string;
     importe: number;
     estado: string;
     archivoUrl: string;
-  }>;
+  }[];
 }

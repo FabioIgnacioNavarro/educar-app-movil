@@ -7,12 +7,7 @@ import React, {
 } from "react";
 import { User, LoginCredentials } from "../types/auth";
 import { authService } from "../services/authService";
-import { getAccessToken, getUserData } from "../utils/storage";
-
-/**
- * Contexto de Autenticación - PATRÓN DE COMPORTAMIENTO: OBSERVER (ADR 0003)
- * Mantiene la sesión del usuario y notifica reactivamente a los componentes observadores.
- */
+import { getAccessToken, clearAuthStorage } from "../utils/storage";
 
 interface AuthContextData {
   user: User | null;
@@ -30,31 +25,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Restaurar sesión al iniciar la aplicación (RNF_M01)
   useEffect(() => {
-    async function loadStoredSession() {
+    async function restoreSession() {
       try {
         const storedToken = await getAccessToken();
-        const storedUser = await getUserData<User>();
-        if (storedToken && storedUser) {
+        if (storedToken) {
+          const currentUser = await authService.getCurrentUser();
           setToken(storedToken);
-          setUser(storedUser);
+          setUser(currentUser);
         }
-      } catch (err) {
-        console.warn("No se pudo restaurar la sesión:", err);
+      } catch (error) {
+        console.warn("No se pudo restaurar la sesión:", error);
+        await clearAuthStorage();
       } finally {
         setIsLoading(false);
       }
     }
-    loadStoredSession();
+    void restoreSession();
   }, []);
 
   async function login(credentials: LoginCredentials) {
     setIsLoading(true);
     try {
-      const { user: loggedUser, tokens } = await authService.login(credentials);
+      const { user: loggedUser, access } = await authService.login(credentials);
       setUser(loggedUser);
-      setToken(tokens.access);
+      setToken(access);
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         token,
-        isAuthenticated: !!token && !!user,
+        isAuthenticated: Boolean(token && user),
         isLoading,
         login,
         logout,

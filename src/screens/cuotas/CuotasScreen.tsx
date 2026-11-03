@@ -37,7 +37,31 @@ export function CuotasScreen({ navigation }: any) {
   }
 
   useEffect(() => {
-    fetchCuotas();
+    let isMounted = true;
+
+    async function loadInitialCuotas() {
+      try {
+        const data = await cuotasService.getCuotas();
+        if (isMounted) {
+          setCuotas(data);
+          setError(null);
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setError(
+            err.response?.data?.detail ||
+              "No se pudieron cargar las cuotas. Verifique su conexión."
+          );
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    void loadInitialCuotas();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   function onRefresh() {
