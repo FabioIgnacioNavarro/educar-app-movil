@@ -13,7 +13,8 @@ import { Button } from "../../components/Button";
 import { ErrorMessage } from "../../components/ErrorMessage";
 
 export function LoginScreen() {
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -25,14 +26,23 @@ export function LoginScreen() {
     }
 
     setError(null);
+    setSubmitting(true);
     try {
       await login({ identifier: usuario.trim(), password });
     } catch (err: any) {
       const serverMessage =
         err.response?.data?.detail ||
         err.response?.data?.error ||
+        (err.code === "ECONNABORTED"
+          ? "Tiempo de espera agotado (10s). El teléfono no pudo comunicarse con el backend en su PC. Verifique que la red Wi-Fi esté en modo Privado en Windows."
+          : null) ||
+        (err.message === "Network Error"
+          ? "Error de conexión. El teléfono no puede alcanzar la IP de su PC. Verifique el Firewall de Windows."
+          : null) ||
         "Credenciales inválidas o error de conexión.";
       setError(serverMessage);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -59,7 +69,7 @@ export function LoginScreen() {
               testID="input-usuario"
               accessibilityLabel="Usuario o Correo"
               style={styles.input}
-              placeholder="Ej: perez_juan"
+              placeholder="Ej: rperez"
               autoCapitalize="none"
               autoCorrect={false}
               value={usuario}
@@ -84,7 +94,7 @@ export function LoginScreen() {
             testID="btn-login"
             title="Ingresar a la Plataforma"
             onPress={handleLogin}
-            loading={isLoading}
+            loading={submitting}
             style={styles.loginButton}
           />
 

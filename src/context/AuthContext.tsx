@@ -45,14 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function login(credentials: LoginCredentials) {
-    setIsLoading(true);
-    try {
-      const { user: loggedUser, access } = await authService.login(credentials);
-      setUser(loggedUser);
-      setToken(access);
-    } finally {
-      setIsLoading(false);
-    }
+    const { user: loggedUser, access } = await authService.login(credentials);
+    setUser(loggedUser);
+    setToken(access);
   }
 
   async function logout() {
