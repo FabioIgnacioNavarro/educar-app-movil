@@ -26,7 +26,7 @@ export function LoginScreen() {
 
     setError(null);
     try {
-      await login({ usuario: usuario.trim(), password });
+      await login({ identifier: usuario.trim(), password });
     } catch (err: any) {
       const serverMessage =
         err.response?.data?.detail ||

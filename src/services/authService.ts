@@ -1,12 +1,7 @@
 import { apiClient } from "../api/client";
-import { LoginCredentials, LoginResponseDTO } from "../types/auth";
-import { adaptUserFromLoginResponse } from "../adapters/authAdapter";
-import {
-  saveAuthTokens,
-  saveUserData,
-  clearAuthStorage,
-  getRefreshToken,
-} from "../utils/storage";
+import { LoginCredentials, LoginResponseDTO, CurrentUserResponseDTO, User } from "../types/auth";
+import { adaptUserFromApi } from "../adapters/authAdapter";
+import { saveAuthTokens, saveUserData, clearAuthStorage } from "../utils/storage";
 
 export const authService = {
   async login(credentials: LoginCredentials) {
@@ -14,30 +9,29 @@ export const authService = {
       "/auth/login/",
       credentials
     );
-    const { access, refresh } = response.data;
-    const user = adaptUserFromLoginResponse(response.data);
+    const { access, user: userDto } = response.data;
+    const user = adaptUserFromApi(userDto);
 
-    await saveAuthTokens(access, refresh);
+    await saveAuthTokens(access);
     await saveUserData(user);
 
-    return { user, tokens: { access, refresh } };
+    return { user, access };
+  },
+
+  async getCurrentUser(): Promise<User> {
+    const response = await apiClient.get<CurrentUserResponseDTO>("/auth/me/");
+    const user = adaptUserFromApi(response.data.user);
+    await saveUserData(user);
+    return user;
   },
 
   async logout() {
     try {
-      const refresh = await getRefreshToken();
-      if (refresh) {
-        await apiClient.post("/auth/logout/", { refresh });
-      }
+      await apiClient.post("/auth/logout/");
     } catch {
-      // Ignorar fallo de red en logout para garantizar la salida local
+      // La sesión local se cierra aunque no haya conexión con el servidor.
     } finally {
       await clearAuthStorage();
     }
-  },
-
-  async requestPasswordReset(email: string) {
-    const response = await apiClient.post("/auth/password-reset/", { email });
-    return response.data;
   },
 };

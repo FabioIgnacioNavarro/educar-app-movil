@@ -89,7 +89,10 @@ Copy-Item .env.example .env
 ```
 Ajustar `EXPO_PUBLIC_API_URL` en `.env`:
 - **Emulador Android Studio:** `http://10.0.2.2:8000/api`
-- **Dispositivo físico con Expo Go:** `http://<TU_IP_LOCAL>:8000/api` (ej. `http://192.168.1.15:8000/api`)
+- **Dispositivo físico con Expo Go:** http://<TU_IP_LOCAL>:8000/api/ (ej. http://192.168.1.15:8000/api/)
+- **PythonAnywhere:** https://educarparatransformar.pythonanywhere.com/api/
+
+La autenticación móvil (inicio, restauración y cierre de sesión) ya consume la API Django. Cuotas, comprobantes, servicios y reportes todavía requieren que se implementen sus endpoints en el backend.
 
 ### 4. Ejecución del Servidor de Desarrollo
 ```powershell
@@ -104,6 +107,9 @@ Escanear el código QR resultante desde la app **Expo Go** en tu celular o presi
 ```powershell
 # Verificación de tipos estricta (TypeScript)
 npm.cmd run typecheck
+
+# Linter de la aplicación
+npm.cmd run lint
 
 # Pruebas de contratos de API REST (Playwright)
 npm.cmd run test:contracts

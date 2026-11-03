@@ -1,4 +1,4 @@
-export type UserRole = "Padre/Tutor" | "Administrador" | "Docente" | "Alumno";
+export type UserRole = "Padre/Tutor" | "Administrador";
 
 export interface User {
   id: number;
@@ -9,27 +9,26 @@ export interface User {
   tutor_id?: number;
 }
 
-export interface AuthTokens {
-  access: string;
-  refresh: string;
+export interface MobileUserDTO {
+  id: number;
+  username: string;
+  name: string;
+  email: string;
+  role: "padre" | "administrativo" | string;
 }
 
 export interface LoginResponseDTO {
   access: string;
-  refresh: string;
-  user: {
-    id: number;
-    nombre_usuario: string;
-    email: string;
-    nombre_completo?: string;
-    nombre?: string;
-    apellido?: string;
-    rol: string;
-    tutor_id?: number;
-  };
+  token_type: "Bearer";
+  expires_in: number;
+  user: MobileUserDTO;
+}
+
+export interface CurrentUserResponseDTO {
+  user: MobileUserDTO;
 }
 
 export interface LoginCredentials {
-  usuario: string;
+  identifier: string;
   password: string;
 }

@@ -1,31 +1,23 @@
-import { LoginResponseDTO, User, UserRole } from "../types/auth";
+import { MobileUserDTO, User, UserRole } from "../types/auth";
 
-/**
- * Adaptador de Autenticación - PATRÓN ESTRUCTURAL: ADAPTER (ADR 0003)
- * Convierte el DTO de respuesta de /api/auth/login/ al modelo de dominio User.
- */
-export function adaptUserFromLoginResponse(dto: LoginResponseDTO): User {
-  const u = dto.user;
-  const fullName =
-    u.nombre_completo ||
-    (u.nombre && u.apellido ? `${u.nombre} ${u.apellido}` : u.nombre_usuario);
+/** Convierte el usuario devuelto por la API Django al modelo de la app. */
+export function adaptUserFromApi(dto: MobileUserDTO): User {
+  const rawRole = dto.role.trim().toLowerCase();
+  let role: UserRole;
 
-  let mappedRole: UserRole = "Padre/Tutor";
-  const rawRole = (u.rol || "").toLowerCase();
-  if (rawRole.includes("admin")) {
-    mappedRole = "Administrador";
-  } else if (rawRole.includes("docente") || rawRole.includes("profesor")) {
-    mappedRole = "Docente";
-  } else if (rawRole.includes("alumno")) {
-    mappedRole = "Alumno";
+  if (rawRole === "administrativo" || rawRole.includes("admin")) {
+    role = "Administrador";
+  } else if (rawRole === "padre" || rawRole.includes("tutor")) {
+    role = "Padre/Tutor";
+  } else {
+    throw new Error("Este rol no tiene acceso a la aplicación móvil.");
   }
 
   return {
-    id: u.id,
-    nombre_usuario: u.nombre_usuario,
-    email: u.email,
-    nombre_completo: fullName,
-    rol: mappedRole,
-    tutor_id: u.tutor_id,
+    id: dto.id,
+    nombre_usuario: dto.username,
+    email: dto.email,
+    nombre_completo: dto.name || dto.username,
+    rol: role,
   };
 }
