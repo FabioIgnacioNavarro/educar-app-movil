@@ -1,18 +1,28 @@
 export type EstadoCuota = "pendiente" | "parcial" | "pagada" | "vencida";
+export type EstadoComprobante = "pendiente" | "aprobado" | "rechazado";
+
+export interface ComprobanteCuotaDTO {
+  id: number;
+  estado: EstadoComprobante | string;
+  fecha_envio: string;
+  nombre_archivo: string;
+}
 
 export interface CuotaDTO {
   id: number;
   periodo: string;
-  monto: string | number;
-  monto_pagado?: string | number;
-  fecha_vencimiento?: string;
-  estado: string;
+  monto_total: string | number;
+  monto_pagado: string | number;
+  saldo: string | number;
+  fecha_vencimiento: string | null;
+  fecha_pago: string | null;
+  estado: EstadoCuota | string;
+  comprobantes: ComprobanteCuotaDTO[];
   alumno: {
     legajo: number;
     nombre_completo: string;
-    curso?: string;
+    curso: string;
   };
-  factura_id?: number;
 }
 
 export interface CuotaModel {
@@ -21,27 +31,33 @@ export interface CuotaModel {
   montoTotal: number;
   montoTotalFormateado: string;
   montoPagado: number;
+  montoPagadoFormateado: string;
   saldoPendiente: number;
+  saldoPendienteFormateado: string;
   fechaVencimiento: string;
   estado: EstadoCuota;
   alumnoNombre: string;
   alumnoLegajo: number;
   alumnoCurso: string;
-  facturaId?: number;
-}
-
-export interface DetalleCuotaModel extends CuotaModel {
-  discriminacion: {
-    cuotaBase: number;
-    deportes: { nombre: string; monto: number }[];
-    transporte?: { recorrido: string; monto: number } | null;
-    comedor?: { monto: number } | null;
-  };
+  fechaPago: string | null;
   comprobantes: {
     id: number;
-    fechaPago: string;
-    importe: number;
-    estado: string;
-    archivoUrl: string;
+    estado: EstadoComprobante | string;
+    fechaEnvio: string;
+    nombreArchivo: string;
   }[];
+}
+
+export interface ComprobanteUploadFile {
+  uri: string;
+  name: string;
+  type: string;
+}
+
+export interface ComprobanteUploadResponse {
+  id: number;
+  cuota_id: number;
+  pago_id: number;
+  estado: EstadoComprobante;
+  mensaje: string;
 }

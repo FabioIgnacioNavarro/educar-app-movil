@@ -17,7 +17,7 @@ Aplicación móvil complementaria al sistema de gestión web del Centro Educativ
 
 ### Objetivos Principales:
 - **Consulta de Cuotas y Deuda:** Estados en tiempo real (`pendiente`, `parcial`, `pagada`, `vencida`).
-- **Carga Digital de Comprobantes:** Envío multipart de transferencias bancarias (PDF o foto) vinculadas a facturas.
+- **Carga Digital de Comprobantes:** Envío multipart de transferencias bancarias (PDF o foto) vinculadas a cuotas.
 - **Consulta de Servicios:** Deportes contratados (máximo 2 por alumno), transporte escolar (por recorrido) y comedor.
 - **Notificaciones Automáticas:** Emisión mensual automática de facturas en PDF y recordatorios de saldo el día 20.
 - **Reportes Móviles:** Consultas de ingresos y deudores para administración y desglose para tutores.
@@ -92,7 +92,7 @@ Ajustar `EXPO_PUBLIC_API_URL` en `.env`:
 - **Dispositivo físico con Expo Go:** http://<TU_IP_LOCAL>:8000/api/ (ej. http://192.168.1.15:8000/api/)
 - **PythonAnywhere:** https://educarparatransformar.pythonanywhere.com/api/
 
-La autenticación móvil (inicio, restauración y cierre de sesión) ya consume la API Django. Cuotas, comprobantes, servicios y reportes todavía requieren que se implementen sus endpoints en el backend.
+La autenticación móvil, el listado de cuotas y la carga de comprobantes consumen la API Django. La app permite revisar estados, saldos y comprobantes adjuntos, además de enviar transferencias en PDF/JPG/PNG. Servicios y reportes todavía requieren sus endpoints en el backend.
 
 ### 4. Ejecución del Servidor de Desarrollo
 ```powershell

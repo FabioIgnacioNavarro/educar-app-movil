@@ -1,6 +1,6 @@
 # Contratos de API REST (Django REST Framework ↔ App Móvil)
 
-Este documento especifica la comunicación entre el backend Django y la aplicación móvil. La autenticación descrita aquí ya está implementada en `mobile_api`; los módulos financieros que siguen son contratos planificados y requieren sus endpoints en Django antes de poder usarse desde la app.
+Este documento especifica la comunicación entre el backend Django y la aplicación móvil. La autenticación y los endpoints móviles de cuotas y comprobantes están implementados en `mobile_api`. Servicios y reportes siguen planificados.
 
 Base URL en desarrollo: `http://10.0.2.2:8000/api/` (emulador Android) o `http://127.0.0.1:8000/api/` (pruebas locales). En producción se usa el dominio HTTPS del sitio seguido por `/api/`.
 
@@ -62,7 +62,7 @@ La API entrega un token de acceso con duración de 8 horas y no entrega token `r
 Obtiene las cuotas de los alumnos a cargo del tutor autenticado (aislamiento RNF_M04).
 - **Autenticación:** `Bearer <access_token>` (Rol: `Padre/Tutor`).
 - **Query Params opcionales:**
-  - `periodo`: Filtrar por mes/año (ej. `2026-11`).
+  - `periodo`: Coincidir con el período completo (ej. `Octubre 2026`).
   - `estado`: Filtrar por `pendiente`, `parcial`, `pagada`, `vencida`.
 - **Response `200 OK`:**
   ```json
@@ -70,52 +70,20 @@ Obtiene las cuotas de los alumnos a cargo del tutor autenticado (aislamiento RNF
     {
       "id": 101,
       "periodo": "Noviembre 2026",
-      "monto": "45000.00",
+      "monto_total": "45000.00",
       "monto_pagado": "0.00",
+      "saldo": "45000.00",
       "fecha_vencimiento": "2026-11-10",
+      "fecha_pago": null,
       "estado": "pendiente",
+      "comprobantes": [],
       "alumno": {
         "legajo": 1245,
         "nombre_completo": "Mateo Pérez",
         "curso": "3° Año A - Secundaria"
-      },
-      "factura_id": 87
+      }
     }
   ]
-  ```
-
----
-
-### `GET /api/cuotas/{id}/`
-Detalle de una cuota con la discriminación exacta de sus conceptos.
-- **Autenticación:** `Bearer <access_token>`.
-- **Response `200 OK`:**
-  ```json
-  {
-    "id": 101,
-    "periodo": "Noviembre 2026",
-    "monto_total": "45000.00",
-    "fecha_vencimiento": "2026-11-10",
-    "estado": "pendiente",
-    "discriminacion": {
-      "cuota_base": "30000.00",
-      "deportes": [
-        { "nombre": "Fútbol", "monto": "5000.00" },
-        { "nombre": "Básquet", "monto": "4000.00" }
-      ],
-      "transporte": { "recorrido": "Recorrido 2 - Centro", "monto": "6000.00" },
-      "comedor": null
-    },
-    "comprobantes": [
-      {
-        "id": 12,
-        "fecha_pago": "2026-11-05",
-        "importe": "20000.00",
-        "estado": "aprobado",
-        "archivo_url": "/media/comprobantes/comp_12.pdf"
-      }
-    ]
-  }
   ```
 
 ---
@@ -123,32 +91,34 @@ Detalle de una cuota con la discriminación exacta de sus conceptos.
 ## 3. Módulo Comprobantes de Pago (Envío Multipart)
 
 ### `POST /api/comprobantes/`
-Sube un comprobante de transferencia bancaria y lo asocia a una factura específica.
+Sube un comprobante de transferencia bancaria y lo asocia a una cuota específica.
 - **Autenticación:** `Bearer <access_token>`.
 - **Content-Type:** `multipart/form-data`.
 - **Form Data Fields:**
-  - `factura`: ID numérico de la factura (ej. `87`).
-  - `fecha_pago`: Fecha en formato `YYYY-MM-DD` (ej. `2026-11-05`).
-  - `importe`: Monto pagado (ej. `45000.00`).
-  - `medio_pago`: `transferencia` (por defecto).
-  - `archivo_comprobante`: Archivo binario (PDF, PNG o JPG).
+  - `cuota_id`: ID numérico de la cuota.
+  - `importe`: Monto pagado (debe ser positivo y no superar el saldo).
+  - `medio_pago`: `Transferencia` por defecto.
+  - `archivo`: Archivo binario (PDF, PNG o JPG).
 - **Response `201 Created`:**
   ```json
   {
     "id": 42,
-    "factura": 87,
-    "fecha_pago": "2026-11-05",
-    "importe": "45000.00",
-    "estado": "pendiente_validacion",
-    "archivo_url": "/media/comprobantes/comp_42.pdf"
+    "cuota_id": 12,
+    "pago_id": 8,
+    "estado": "pendiente",
+    "mensaje": "El comprobante fue enviado y queda pendiente de revisión administrativa."
   }
   ```
 - **Response `400 Bad Request`:**
   ```json
   {
-    "archivo_comprobante": ["Formato de archivo no admitido. Utilice PDF o imagen (JPG/PNG)."]
+    "detail": "Debe enviar el archivo del comprobante en 'archivo'."
   }
   ```
+
+### `GET /api/comprobantes/{id}/archivo/`
+
+Descarga/abre el archivo de un comprobante con Bearer token. El backend verifica que pertenezca a un alumno asociado al tutor. La URL no es pública y el contrato de cuotas solo expone el nombre del archivo.
 
 ---
 

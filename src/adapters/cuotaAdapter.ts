@@ -1,28 +1,37 @@
-import { CuotaDTO, CuotaModel, EstadoCuota } from "../types/cuota";
+import {
+  CuotaDTO,
+  CuotaModel,
+  EstadoComprobante,
+  EstadoCuota,
+} from "../types/cuota";
 import { formatCurrency, formatDate } from "../utils/formatters";
 
-/**
- * Adaptador de Cuotas - PATRÓN ESTRUCTURAL: ADAPTER (ADR 0003)
- * Normaliza campos numéricos, estados y fechas provenientes de DRF.
- */
-export function adaptCuota(dto: CuotaDTO): CuotaModel {
-  const montoTotal =
-    typeof dto.monto === "string" ? parseFloat(dto.monto) : dto.monto || 0;
-  const montoPagado =
-    typeof dto.monto_pagado === "string"
-      ? parseFloat(dto.monto_pagado)
-      : dto.monto_pagado || 0;
-  const saldoPendiente = Math.max(0, montoTotal - montoPagado);
+function toNumber(value: string | number | undefined): number {
+  const parsed = typeof value === "number" ? value : Number(value ?? 0);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
 
-  const rawEstado = (dto.estado || "").toLowerCase();
-  let estado: EstadoCuota = "pendiente";
-  if (rawEstado.includes("pagad") || rawEstado.includes("paga")) {
-    estado = "pagada";
-  } else if (rawEstado.includes("parcial")) {
-    estado = "parcial";
-  } else if (rawEstado.includes("vencid")) {
-    estado = "vencida";
+function mapEstadoCuota(value: string): EstadoCuota {
+  const normalized = value.toLocaleLowerCase("es-AR");
+  if (normalized === "parcial") return "parcial";
+  if (normalized === "pagada") return "pagada";
+  if (normalized === "vencida") return "vencida";
+  return "pendiente";
+}
+
+function mapEstadoComprobante(value: string): EstadoComprobante | string {
+  const normalized = value.toLocaleLowerCase("es-AR");
+  if (["pendiente", "aprobado", "rechazado"].includes(normalized)) {
+    return normalized as EstadoComprobante;
   }
+  return value;
+}
+
+/** Convierte la respuesta real de la API de cuotas al modelo que usa la interfaz. */
+export function adaptCuota(dto: CuotaDTO): CuotaModel {
+  const montoTotal = toNumber(dto.monto_total);
+  const montoPagado = toNumber(dto.monto_pagado);
+  const saldoPendiente = Math.max(0, toNumber(dto.saldo ?? montoTotal - montoPagado));
 
   return {
     id: dto.id,
@@ -30,13 +39,21 @@ export function adaptCuota(dto: CuotaDTO): CuotaModel {
     montoTotal,
     montoTotalFormateado: formatCurrency(montoTotal),
     montoPagado,
+    montoPagadoFormateado: formatCurrency(montoPagado),
     saldoPendiente,
-    fechaVencimiento: formatDate(dto.fecha_vencimiento),
-    estado,
+    saldoPendienteFormateado: formatCurrency(saldoPendiente),
+    fechaVencimiento: formatDate(dto.fecha_vencimiento ?? undefined),
+    estado: mapEstadoCuota(dto.estado),
     alumnoNombre: dto.alumno?.nombre_completo || "Alumno no asignado",
     alumnoLegajo: dto.alumno?.legajo || 0,
     alumnoCurso: dto.alumno?.curso || "Curso no especificado",
-    facturaId: dto.factura_id,
+    fechaPago: dto.fecha_pago,
+    comprobantes: (dto.comprobantes || []).map((comprobante) => ({
+      id: comprobante.id,
+      estado: mapEstadoComprobante(comprobante.estado),
+      fechaEnvio: comprobante.fecha_envio,
+      nombreArchivo: comprobante.nombre_archivo,
+    })),
   };
 }
 
