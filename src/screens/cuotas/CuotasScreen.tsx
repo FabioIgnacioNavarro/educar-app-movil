@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -6,29 +6,48 @@ import {
   StyleSheet,
   RefreshControl,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import { CuotaModel } from "../../types/cuota";
+import { CuotaModel, PagoHistorialModel } from "../../types/cuota";
 import { cuotasService } from "../../services/cuotasService";
 import { Card } from "../../components/Card";
 import { StatusBadge } from "../../components/StatusBadge";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ErrorMessage } from "../../components/ErrorMessage";
+import { DetalleCuotaModal } from "./DetalleCuotaModal";
+import { formatCurrency } from "../../utils/formatters";
+
+type TabView = "vigentes" | "historial";
 
 export function CuotasScreen({ navigation }: any) {
+  const [activeTab, setActiveTab] = useState<TabView>("vigentes");
   const [cuotas, setCuotas] = useState<CuotaModel[]>([]);
+  const [historial, setHistorial] = useState<PagoHistorialModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function fetchCuotas() {
+  // Filtros
+  const [selectedAlumno, setSelectedAlumno] = useState<string>("TODOS");
+  const [selectedEstado, setSelectedEstado] = useState<string>("TODOS");
+
+  // Modal de Detalle
+  const [selectedCuotaId, setSelectedCuotaId] = useState<number | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  async function loadData() {
     try {
       setError(null);
-      const data = await cuotasService.getCuotas();
-      setCuotas(data);
+      const [cuotasData, historialData] = await Promise.all([
+        cuotasService.getCuotas(),
+        cuotasService.getHistorialPagos(),
+      ]);
+      setCuotas(cuotasData);
+      setHistorial(historialData);
     } catch (err: any) {
       setError(
         err.response?.data?.detail ||
-          "No se pudieron cargar las cuotas. Verifique su conexión."
+          "No se pudieron sincronizar las cuotas. Verifique su conexión."
       );
     } finally {
       setLoading(false);
@@ -39,26 +58,32 @@ export function CuotasScreen({ navigation }: any) {
   useEffect(() => {
     let isMounted = true;
 
-    async function loadInitialCuotas() {
+    async function initData() {
       try {
-        const data = await cuotasService.getCuotas();
+        const [cuotasData, historialData] = await Promise.all([
+          cuotasService.getCuotas(),
+          cuotasService.getHistorialPagos(),
+        ]);
         if (isMounted) {
-          setCuotas(data);
+          setCuotas(cuotasData);
+          setHistorial(historialData);
           setError(null);
         }
       } catch (err: any) {
         if (isMounted) {
           setError(
             err.response?.data?.detail ||
-              "No se pudieron cargar las cuotas. Verifique su conexión."
+              "No se pudieron sincronizar las cuotas. Verifique su conexión."
           );
         }
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
-    void loadInitialCuotas();
+    void initData();
     return () => {
       isMounted = false;
     };
@@ -66,77 +91,312 @@ export function CuotasScreen({ navigation }: any) {
 
   function onRefresh() {
     setRefreshing(true);
-    fetchCuotas();
+    void loadData();
+  }
+
+  // Lista única de alumnos para los chips de filtro
+  const alumnosList = useMemo(() => {
+    const names = Array.from(new Set(cuotas.map((c) => c.alumnoNombre)));
+    return ["TODOS", ...names];
+  }, [cuotas]);
+
+  // Cuotas filtradas
+  const filteredCuotas = useMemo(() => {
+    return cuotas.filter((c) => {
+      const matchAlumno =
+        selectedAlumno === "TODOS" || c.alumnoNombre === selectedAlumno;
+      const matchEstado =
+        selectedEstado === "TODOS" || c.estado === selectedEstado.toLowerCase();
+      return matchAlumno && matchEstado;
+    });
+  }, [cuotas, selectedAlumno, selectedEstado]);
+
+  // Saldo total pendiente acumulado
+  const totalDeudaAcumulada = useMemo(() => {
+    return cuotas.reduce((acc, c) => acc + c.saldoPendiente, 0);
+  }, [cuotas]);
+
+  // Total abonado histórico
+  const totalHistoricoAbonado = useMemo(() => {
+    return historial.reduce((acc, p) => acc + p.montoAbonado, 0);
+  }, [historial]);
+
+  function handleVerDetalle(id: number) {
+    setSelectedCuotaId(id);
+    setModalVisible(true);
+  }
+
+  function handleAdjuntarComprobante(facturaId?: number) {
+    navigation.navigate("Comprobantes", { facturaId });
   }
 
   if (loading) {
-    return <LoadingSpinner message="Consultando cuotas e importes..." />;
+    return <LoadingSpinner message="Consultando cuotas e importes escolares..." />;
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Mis Cuotas y Pagos</Text>
-        <Text style={styles.subtitle}>
-          Visualice el estado de cuenta de sus hijos asociados
-        </Text>
+      {/* Selector de Pestañas Superiores */}
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          style={[styles.tabButton, activeTab === "vigentes" && styles.tabButtonActive]}
+          onPress={() => setActiveTab("vigentes")}
+        >
+          <Text
+            style={[styles.tabText, activeTab === "vigentes" && styles.tabTextActive]}
+          >
+            Cuotas Vigentes
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tabButton, activeTab === "historial" && styles.tabButtonActive]}
+          onPress={() => setActiveTab("historial")}
+        >
+          <Text
+            style={[styles.tabText, activeTab === "historial" && styles.tabTextActive]}
+          >
+            Historial de Pagos
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {error && <ErrorMessage message={error} />}
 
-      <FlatList
-        data={cuotas}
-        keyExtractor={(item) => item.id.toString()}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyTitle}>Sin cuotas registradas</Text>
-            <Text style={styles.emptyText}>
-              No se encontraron cuotas pendientes para el período consultado.
+      {activeTab === "vigentes" ? (
+        <>
+          {/* Banner Resumen de Deuda */}
+          <View style={styles.summaryBanner}>
+            <View>
+              <Text style={styles.summaryTitle}>Saldo Total a Regularizar</Text>
+              <Text style={styles.summarySubtitle}>
+                Cuotas vigentes y pendientes de vencimiento
+              </Text>
+            </View>
+            <Text style={styles.summaryAmount}>
+              {formatCurrency(totalDeudaAcumulada)}
             </Text>
           </View>
-        }
-        renderItem={({ item }) => (
-          <Card testID={`cuota-card-${item.id}`} style={styles.cuotaCard}>
-            <View style={styles.cardHeader}>
-              <View>
-                <Text style={styles.periodo}>{item.periodo}</Text>
-                <Text style={styles.alumno}>
-                  {item.alumnoNombre} ({item.alumnoCurso})
+
+          {/* Filtros por Alumno */}
+          {alumnosList.length > 2 && (
+            <View style={styles.filterSection}>
+              <Text style={styles.filterLabel}>Filtrar por Alumno:</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.chipsScroll}
+              >
+                {alumnosList.map((nombre) => (
+                  <TouchableOpacity
+                    key={nombre}
+                    style={[
+                      styles.chip,
+                      selectedAlumno === nombre && styles.chipActive,
+                    ]}
+                    onPress={() => setSelectedAlumno(nombre)}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        selectedAlumno === nombre && styles.chipTextActive,
+                      ]}
+                    >
+                      {nombre === "TODOS" ? "Todos los Alumnos" : nombre}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Filtros por Estado */}
+          <View style={styles.filterSection}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.chipsScroll}
+            >
+              {["TODOS", "pendiente", "parcial", "vencida", "pagada"].map((est) => (
+                <TouchableOpacity
+                  key={est}
+                  style={[
+                    styles.chip,
+                    selectedEstado === est && styles.chipActive,
+                  ]}
+                  onPress={() => setSelectedEstado(est)}
+                >
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selectedEstado === est && styles.chipTextActive,
+                    ]}
+                  >
+                    {est.toUpperCase()}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Lista de Tarjetas de Cuotas */}
+          <FlatList
+            data={filteredCuotas}
+            keyExtractor={(item) => item.id.toString()}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            contentContainerStyle={styles.listContent}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyTitle}>Sin cuotas para este filtro</Text>
+                <Text style={styles.emptyText}>
+                  No se encontraron cuotas que coincidan con los criterios seleccionados.
                 </Text>
               </View>
-              <StatusBadge estado={item.estado} />
-            </View>
+            }
+            renderItem={({ item }) => (
+              <Card testID={`cuota-card-${item.id}`} style={styles.cuotaCard}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleVerDetalle(item.id)}
+                >
+                  <View style={styles.cardHeader}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.periodo}>{item.periodo}</Text>
+                      <Text style={styles.alumno}>
+                        {item.alumnoNombre} • {item.alumnoCurso}
+                      </Text>
+                    </View>
+                    <StatusBadge estado={item.estado} />
+                  </View>
 
-            <View style={styles.divider} />
+                  <View style={styles.divider} />
 
-            <View style={styles.detailsRow}>
-              <Text style={styles.detailLabel}>Vencimiento:</Text>
-              <Text style={styles.detailValue}>{item.fechaVencimiento}</Text>
-            </View>
+                  <View style={styles.detailsRow}>
+                    <Text style={styles.detailLabel}>Vencimiento:</Text>
+                    <Text style={styles.detailValue}>{item.fechaVencimiento}</Text>
+                  </View>
 
-            <View style={styles.detailsRow}>
-              <Text style={styles.detailLabel}>Total Cuota:</Text>
-              <Text style={styles.montoTotal}>{item.montoTotalFormateado}</Text>
-            </View>
+                  <View style={styles.detailsRow}>
+                    <Text style={styles.detailLabel}>Monto Cuota:</Text>
+                    <Text style={styles.montoTotal}>{item.montoTotalFormateado}</Text>
+                  </View>
 
-            {item.estado !== "pagada" && (
-              <TouchableOpacity
-                testID={`btn-pagar-${item.id}`}
-                style={styles.payButton}
-                onPress={() =>
-                  navigation.navigate("Comprobantes", {
-                    facturaId: item.facturaId,
-                  })
-                }
-              >
-                <Text style={styles.payButtonText}>Adjuntar Comprobante</Text>
-              </TouchableOpacity>
+                  {item.montoPagado > 0 && (
+                    <View style={styles.detailsRow}>
+                      <Text style={styles.detailLabel}>Acreditado:</Text>
+                      <Text style={styles.montoPagado}>
+                        - {item.montoPagadoFormateado}
+                      </Text>
+                    </View>
+                  )}
+
+                  <View style={[styles.detailsRow, styles.saldoRow]}>
+                    <Text style={styles.saldoLabelText}>Saldo a Pagar:</Text>
+                    <Text
+                      style={[
+                        styles.saldoText,
+                        item.saldoPendiente > 0
+                          ? styles.textDanger
+                          : styles.textSuccess,
+                      ]}
+                    >
+                      {item.saldoPendienteFormateado}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <View style={styles.cardActions}>
+                  <TouchableOpacity
+                    style={styles.detailButton}
+                    onPress={() => handleVerDetalle(item.id)}
+                  >
+                    <Text style={styles.detailButtonText}>Ver Desglose</Text>
+                  </TouchableOpacity>
+
+                  {item.estado !== "pagada" && (
+                    <TouchableOpacity
+                      testID={`btn-pagar-${item.id}`}
+                      style={styles.payButton}
+                      onPress={() => handleAdjuntarComprobante(item.facturaId || item.id)}
+                    >
+                      <Text style={styles.payButtonText}>Pagar Transferencia</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </Card>
             )}
-          </Card>
-        )}
+          />
+        </>
+      ) : (
+        /* Pestaña: Historial de Pagos (HU_M03) */
+        <View style={{ flex: 1 }}>
+          <View style={[styles.summaryBanner, styles.bannerSuccess]}>
+            <View>
+              <Text style={styles.summaryTitle}>Total Histórico Abonado</Text>
+              <Text style={styles.summarySubtitle}>
+                Pagos acreditados durante el ciclo lectivo
+              </Text>
+            </View>
+            <Text style={[styles.summaryAmount, styles.textSuccess]}>
+              {formatCurrency(totalHistoricoAbonado)}
+            </Text>
+          </View>
+
+          <FlatList
+            data={historial}
+            keyExtractor={(item) => item.id.toString()}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            contentContainerStyle={styles.listContent}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyTitle}>Sin pagos registrados</Text>
+                <Text style={styles.emptyText}>
+                  Aún no se registran pagos o transferencias validadas.
+                </Text>
+              </View>
+            }
+            renderItem={({ item }) => (
+              <Card style={styles.historialCard}>
+                <View style={styles.historialHeader}>
+                  <View>
+                    <Text style={styles.historialPeriodo}>{item.periodo}</Text>
+                    <Text style={styles.historialAlumno}>
+                      {item.alumnoNombre} • {item.alumnoCurso}
+                    </Text>
+                  </View>
+                  <View style={styles.pagoBadge}>
+                    <Text style={styles.pagoBadgeText}>ACREDITADO</Text>
+                  </View>
+                </View>
+
+                <View style={styles.divider} />
+
+                <View style={styles.detailsRow}>
+                  <Text style={styles.detailLabel}>Fecha de Transferencia:</Text>
+                  <Text style={styles.detailValue}>{item.fechaPago}</Text>
+                </View>
+
+                <View style={styles.detailsRow}>
+                  <Text style={styles.detailLabel}>Monto Cancelado:</Text>
+                  <Text style={styles.historialMonto}>
+                    {item.montoAbonadoFormateado}
+                  </Text>
+                </View>
+              </Card>
+            )}
+          />
+        </View>
+      )}
+
+      {/* Modal de Detalle Discriminado */}
+      <DetalleCuotaModal
+        visible={modalVisible}
+        cuotaId={selectedCuotaId}
+        onClose={() => setModalVisible(false)}
+        onAdjuntarComprobante={handleAdjuntarComprobante}
       />
     </View>
   );
@@ -146,20 +406,98 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8FAFC",
+  },
+  tabContainer: {
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E2E8F0",
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: 14,
+    alignItems: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
+  },
+  tabButtonActive: {
+    borderBottomColor: "#1E3A8A",
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  tabTextActive: {
+    color: "#1E3A8A",
+    fontWeight: "700",
+  },
+  summaryBanner: {
+    margin: 16,
+    marginBottom: 8,
+    backgroundColor: "#EFF6FF",
+    borderRadius: 14,
     padding: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
   },
-  header: {
-    marginBottom: 16,
+  bannerSuccess: {
+    backgroundColor: "#F0FDF4",
+    borderColor: "#BBF7D0",
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#0F172A",
-  },
-  subtitle: {
+  summaryTitle: {
     fontSize: 13,
+    fontWeight: "700",
+    color: "#1E3A8A",
+  },
+  summarySubtitle: {
+    fontSize: 11,
     color: "#64748B",
     marginTop: 2,
+  },
+  summaryAmount: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1E3A8A",
+  },
+  filterSection: {
+    paddingHorizontal: 16,
+    marginBottom: 6,
+  },
+  filterLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#475569",
+    marginBottom: 4,
+  },
+  chipsScroll: {
+    flexDirection: "row",
+  },
+  chip: {
+    backgroundColor: "#E2E8F0",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  chipActive: {
+    backgroundColor: "#1E3A8A",
+  },
+  chipText: {
+    fontSize: 12,
+    color: "#334155",
+    fontWeight: "500",
+  },
+  chipTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+  listContent: {
+    padding: 16,
+    paddingTop: 8,
   },
   cuotaCard: {
     marginBottom: 12,
@@ -170,65 +508,143 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   periodo: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "700",
-    color: "#1E293B",
+    color: "#0F172A",
   },
   alumno: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#475569",
     marginTop: 2,
   },
   divider: {
     height: 1,
-    backgroundColor: "#E2E8F0",
-    marginVertical: 12,
+    backgroundColor: "#F1F5F9",
+    marginVertical: 10,
   },
   detailsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 6,
+    paddingVertical: 3,
   },
   detailLabel: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#64748B",
   },
   detailValue: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
     color: "#1E293B",
   },
   montoTotal: {
-    fontSize: 16,
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#0F172A",
+  },
+  montoPagado: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#15803D",
+  },
+  saldoRow: {
+    marginTop: 4,
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: "#F1F5F9",
+  },
+  saldoLabelText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  saldoText: {
+    fontSize: 15,
     fontWeight: "bold",
-    color: "#1E3A8A",
+  },
+  textDanger: {
+    color: "#B91C1C",
+  },
+  textSuccess: {
+    color: "#15803D",
+  },
+  cardActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#F1F5F9",
+    gap: 8,
+  },
+  detailButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    backgroundColor: "#F1F5F9",
+  },
+  detailButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#334155",
   },
   payButton: {
-    marginTop: 12,
-    backgroundColor: "#0D9488",
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+    backgroundColor: "#1E3A8A",
   },
   payButtonText: {
+    fontSize: 12,
+    fontWeight: "700",
     color: "#FFFFFF",
-    fontWeight: "600",
-    fontSize: 14,
   },
   emptyContainer: {
+    padding: 32,
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 48,
   },
   emptyTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#334155",
   },
   emptyText: {
     fontSize: 13,
-    color: "#94A3B8",
+    color: "#64748B",
     textAlign: "center",
-    marginTop: 4,
+    marginTop: 6,
+  },
+  historialCard: {
+    marginBottom: 10,
+  },
+  historialHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  historialPeriodo: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  historialAlumno: {
+    fontSize: 12,
+    color: "#475569",
+    marginTop: 2,
+  },
+  pagoBadge: {
+    backgroundColor: "#DCFCE7",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  pagoBadgeText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#166534",
+  },
+  historialMonto: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#15803D",
   },
 });
