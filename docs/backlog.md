@@ -16,7 +16,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M02** | Sprint 2 | Consultar listado de cuotas pendientes y por vencer (#7) | Alta | `en progreso` | Navarro | Filtro por hijos propios, badges de estado visual, detalle de cuota |
 | **HU_M03** | Sprint 2 | Consultar historial completo de pagos (#8) | Media | `en progreso` | Navarro | Pagos ordenados por fecha, desglose de montos y comprobantes asociados |
 | **HU_M04** | Sprint 2 | Cargar comprobante de transferencia (PDF/imagen) (#9) | Alta | `pendiente` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a factura y validación de formato |
-| **HU_M05** | Sprint 2 | Consultar inscripciones a deportes, transporte y comedor (#10) | Media | `pendiente` | Navarro | Límite máx. 2 deportes, recorrido asignado y valores vigentes |
+| **HU_M05** | Sprint 2 | Consultar inscripciones a deportes, transporte y comedor (#10) | Media | `en progreso` | Navarro | Límite máx. 2 deportes, recorrido asignado y valores vigentes |
 | **HU_M06** | Sprint 3 | Recibir notificación de factura mensual emitida | Alta | `pendiente` | Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto |
 | **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) | Media | `pendiente` | Echeverría | Tarea día 20, solo a tutores con deuda, monto pendiente |
 | **HU_M08** | Sprint 3 | Consultar reportes de facturas por período (Tutor) | Media | `pendiente` | Navarro | Filtro de fechas, listado de comprobantes asociados |
@@ -52,10 +52,10 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M02:** Pantalla/modal de detalle de cuota con desglose de conceptos (cuota base, servicios) (#7).
 - [x] **HU_M02:** Implementación de filtro por alumno y período en el cliente (#7).
 - [x] **HU_M03:** Pantalla de historial completo de pagos ordenados cronológicamente con montos y comprobantes asociados (#8).
-- [ ] **CHORE-05:** Wireframes y tarjetas de visualización de servicios contratados.
-- [ ] **HU_M05:** Consumo de `GET /api/servicios/inscripciones/` (#10).
-- [ ] **HU_M05:** Visualización de deportes asignados (validación de máx. 2) y sus aranceles (#10).
-- [ ] **HU_M05:** Visualización del recorrido de transporte escolar y estado de comedor (#10).
+- [x] **CHORE-05:** Wireframes y tarjetas de visualización de servicios contratados.
+- [x] **HU_M05:** Consumo de `GET /api/servicios/inscripciones/` (#10).
+- [x] **HU_M05:** Visualización de deportes asignados (validación de máx. 2) y sus aranceles (#10).
+- [x] **HU_M05:** Visualización del recorrido de transporte escolar y estado de comedor (#10).
 
 #### 👤 Tareas Eje B (Maximiliano Echeverría - Backend DRF + Comprobantes):
 - [ ] **BACKEND:** Endpoint `GET /api/cuotas/` con filtrado por rol Tutor en `educar_pagina` (`RNF_M04`).
