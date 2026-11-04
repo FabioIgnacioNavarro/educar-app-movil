@@ -17,7 +17,7 @@ interface DetalleCuotaModalProps {
   visible: boolean;
   cuotaId: number | null;
   onClose: () => void;
-  onAdjuntarComprobante?: (facturaId?: number) => void;
+  onAdjuntarComprobante?: (cuotaId?: number, saldo?: number) => void;
 }
 
 export function DetalleCuotaModal({
@@ -167,7 +167,7 @@ export function DetalleCuotaModal({
               {detalle.comprobantes.length === 0 ? (
                 <View style={styles.emptyComprobantes}>
                   <Text style={styles.emptyComprobantesText}>
-                    No hay comprobantes de transferencia registrados para esta factura.
+                    No hay comprobantes de transferencia registrados para esta cuota.
                   </Text>
                 </View>
               ) : (
@@ -200,7 +200,7 @@ export function DetalleCuotaModal({
                   title="Adjuntar Nuevo Comprobante"
                   onPress={() => {
                     onClose();
-                    onAdjuntarComprobante(detalle.facturaId || detalle.id);
+                    onAdjuntarComprobante(detalle.id, detalle.saldoPendiente);
                   }}
                   style={styles.actionBtn}
                 />

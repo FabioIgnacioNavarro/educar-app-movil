@@ -15,7 +15,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M01** | Sprint 1 | Iniciar y cerrar sesión en la app móvil con JWT (#3) | Alta | `terminado` | Navarro / Echeverría | Token en SecureStore, sesión persistente, guard por rol, verificado en dispositivo real |
 | **HU_M02** | Sprint 2 | Consultar listado de cuotas pendientes y por vencer (#7) | Alta | `terminado` | Navarro | Filtro por hijos propios, badges de estado visual, detalle de cuota |
 | **HU_M03** | Sprint 2 | Consultar historial completo de pagos (#8) | Media | `terminado` | Navarro | Pagos ordenados por fecha, desglose de montos y comprobantes asociados |
-| **HU_M04** | Sprint 2 | Cargar comprobante de transferencia (PDF/imagen) (#9) | Alta | `pendiente` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a factura y validación de formato |
+| **HU_M04** | Sprint 2 | Cargar comprobante de transferencia (PDF/imagen) (#9) | Alta | `en progreso` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a cuota y validación de formato |
 | **HU_M05** | Sprint 2 | Consultar inscripciones a deportes, transporte y comedor (#10) | Media | `terminado` | Navarro | Límite máx. 2 deportes, recorrido asignado y valores vigentes |
 | **HU_M06** | Sprint 3 | Recibir notificación de factura mensual emitida | Alta | `pendiente` | Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto |
 | **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) | Media | `pendiente` | Echeverría | Tarea día 20, solo a tutores con deuda, monto pendiente |
@@ -63,9 +63,9 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [ ] **BACKEND:** Endpoint `POST /api/comprobantes/` receptor de archivos multipart en `educar_pagina`.
 - [ ] **BACKEND:** Endpoint `GET /api/servicios/inscripciones/` para consulta de servicios en `educar_pagina`.
 - [ ] **CHORE-04:** Wireframes de selector de comprobantes y vista previa en móvil.
-- [ ] **HU_M04:** Integración de `expo-document-picker` y `expo-image-picker` para adjuntar PDF/imágenes (#9).
-- [ ] **HU_M04:** Consumo de `POST /api/comprobantes/` con envío multipart `{ uri, name, type }` (#9).
-- [ ] **HU_M04:** Asociación del comprobante a la factura correspondiente y confirmación visual (#9).
+- [x] **HU_M04:** Integración de `expo-document-picker` y `expo-image-picker` para adjuntar PDF/imágenes (#9).
+- [x] **HU_M04:** Consumo de `POST /api/comprobantes/` con envío multipart `{ uri, name, type }` (#9).
+- [x] **HU_M04:** Asociación del comprobante a la cuota correspondiente y confirmación visual (#9).
 
 - **DoD Sprint 2:** `HU_M02`, `HU_M03`, `HU_M04` y `HU_M05` completadas y validadas integralmente en emulador y dispositivo físico.
 

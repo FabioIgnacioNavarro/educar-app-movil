@@ -6,7 +6,10 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 
 import { LoginScreen } from "../screens/auth/LoginScreen";
 import { CuotasScreen } from "../screens/cuotas/CuotasScreen";
-import { ComprobantesScreen } from "../screens/comprobantes/ComprobantesScreen";
+import {
+  AdminComprobantesScreen,
+  ComprobantesScreen,
+} from "../screens/comprobantes/ComprobantesScreen";
 import { ServiciosScreen } from "../screens/servicios/ServiciosScreen";
 import { ReportesScreen } from "../screens/reportes/ReportesScreen";
 import { PerfilScreen } from "../screens/perfil/PerfilScreen";
@@ -82,7 +85,7 @@ function AdminTabNavigator() {
       />
       <AdminTabs.Screen
         name="ComprobantesAdmin"
-        component={ComprobantesScreen}
+        component={AdminComprobantesScreen}
         options={{ title: "Validar Pagos" }}
       />
       <AdminTabs.Screen

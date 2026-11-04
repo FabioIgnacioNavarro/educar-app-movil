@@ -123,32 +123,34 @@ Detalle de una cuota con la discriminación exacta de sus conceptos.
 ## 3. Módulo Comprobantes de Pago (Envío Multipart)
 
 ### `POST /api/comprobantes/`
-Sube un comprobante de transferencia bancaria y lo asocia a una factura específica.
+Sube un comprobante de transferencia bancaria y lo asocia a una cuota específica.
 - **Autenticación:** `Bearer <access_token>`.
 - **Content-Type:** `multipart/form-data`.
 - **Form Data Fields:**
-  - `factura`: ID numérico de la factura (ej. `87`).
-  - `fecha_pago`: Fecha en formato `YYYY-MM-DD` (ej. `2026-11-05`).
-  - `importe`: Monto pagado (ej. `45000.00`).
-  - `medio_pago`: `transferencia` (por defecto).
-  - `archivo_comprobante`: Archivo binario (PDF, PNG o JPG).
+  - `cuota_id`: ID numérico de la cuota.
+  - `importe`: Monto a acreditar; debe ser positivo y no superar el saldo pendiente.
+  - `medio_pago`: medio de pago (opcional, por defecto `Transferencia`).
+  - `archivo`: Archivo binario (PDF, PNG o JPG).
 - **Response `201 Created`:**
   ```json
   {
     "id": 42,
-    "factura": 87,
-    "fecha_pago": "2026-11-05",
-    "importe": "45000.00",
-    "estado": "pendiente_validacion",
-    "archivo_url": "/media/comprobantes/comp_42.pdf"
+    "cuota_id": 101,
+    "pago_id": 42,
+    "estado": "pendiente",
+    "mensaje": "El comprobante fue enviado y queda pendiente de revisión administrativa."
   }
   ```
 - **Response `400 Bad Request`:**
   ```json
   {
-    "archivo_comprobante": ["Formato de archivo no admitido. Utilice PDF o imagen (JPG/PNG)."]
+      "detail": "Debe enviar el archivo del comprobante en 'archivo'."
   }
   ```
+
+### `GET /api/comprobantes/{id}/archivo/`
+
+Descarga el archivo asociado a un comprobante usando el token Bearer. El backend vuelve a validar que el comprobante pertenezca a un alumno asociado al tutor; no se expone una URL pública.
 
 ---
 

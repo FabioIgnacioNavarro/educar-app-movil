@@ -16,10 +16,15 @@ import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { DetalleCuotaModal } from "./DetalleCuotaModal";
 import { formatCurrency } from "../../utils/formatters";
+import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { MainTabParamList } from "../../types/navigation";
+import { isAxiosError } from "axios";
 
 type TabView = "vigentes" | "historial";
 
-export function CuotasScreen({ navigation }: any) {
+type CuotasScreenProps = BottomTabScreenProps<MainTabParamList, "Cuotas">;
+
+export function CuotasScreen({ navigation }: CuotasScreenProps) {
   const [activeTab, setActiveTab] = useState<TabView>("vigentes");
   const [cuotas, setCuotas] = useState<CuotaModel[]>([]);
   const [historial, setHistorial] = useState<PagoHistorialModel[]>([]);
@@ -44,11 +49,8 @@ export function CuotasScreen({ navigation }: any) {
       ]);
       setCuotas(cuotasData);
       setHistorial(historialData);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.detail ||
-          "No se pudieron sincronizar las cuotas. Verifique su conexión."
-      );
+    } catch (err: unknown) {
+      setError(getApiError(err));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -69,12 +71,9 @@ export function CuotasScreen({ navigation }: any) {
           setHistorial(historialData);
           setError(null);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (isMounted) {
-          setError(
-            err.response?.data?.detail ||
-              "No se pudieron sincronizar las cuotas. Verifique su conexión."
-          );
+          setError(getApiError(err));
         }
       } finally {
         if (isMounted) {
@@ -126,8 +125,14 @@ export function CuotasScreen({ navigation }: any) {
     setModalVisible(true);
   }
 
-  function handleAdjuntarComprobante(facturaId?: number) {
-    navigation.navigate("Comprobantes", { facturaId });
+  function handleAdjuntarComprobante(cuotaId?: number, saldo?: number) {
+    const cuota = cuotas.find((item) => item.id === cuotaId);
+    navigation.navigate("Comprobantes", {
+      cuotaId,
+      saldo,
+      periodo: cuota?.periodo,
+      alumnoNombre: cuota?.alumnoNombre,
+    });
   }
 
   if (loading) {
@@ -318,7 +323,7 @@ export function CuotasScreen({ navigation }: any) {
                     <TouchableOpacity
                       testID={`btn-pagar-${item.id}`}
                       style={styles.payButton}
-                      onPress={() => handleAdjuntarComprobante(item.facturaId || item.id)}
+                      onPress={() => handleAdjuntarComprobante(item.id, item.saldoPendiente)}
                     >
                       <Text style={styles.payButtonText}>Pagar Transferencia</Text>
                     </TouchableOpacity>
@@ -400,6 +405,13 @@ export function CuotasScreen({ navigation }: any) {
       />
     </View>
   );
+}
+
+function getApiError(error: unknown): string {
+  if (isAxiosError<{ detail?: string }>(error) && error.response?.data?.detail) {
+    return error.response.data.detail;
+  }
+  return "No se pudieron sincronizar las cuotas. Verifique su conexión.";
 }
 
 const styles = StyleSheet.create({
