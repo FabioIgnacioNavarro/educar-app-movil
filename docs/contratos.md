@@ -74,6 +74,17 @@ Obtiene las cuotas de los alumnos a cargo del tutor autenticado (aislamiento RNF
       "monto_pagado": "0.00",
       "fecha_vencimiento": "2026-11-10",
       "estado": "pendiente",
+      "comprobantes": [
+        {
+          "id": 42,
+          "estado": "pendiente",
+          "estado_pago": "en revisión",
+          "fecha_envio": "2026-11-05T18:30:00-03:00",
+          "importe": "20000.00",
+          "motivo_rechazo": null,
+          "nombre_archivo": "comprobantes/2026/11/transferencia.pdf"
+        }
+      ],
       "alumno": {
         "legajo": 1245,
         "nombre_completo": "Mateo Pérez",
@@ -87,7 +98,7 @@ Obtiene las cuotas de los alumnos a cargo del tutor autenticado (aislamiento RNF
 ---
 
 ### `GET /api/cuotas/{id}/`
-Detalle de una cuota con la discriminación exacta de sus conceptos.
+Contrato planificado para devolver el detalle discriminado de una cuota. **El backend actual todavía no implementa esta ruta.** Mientras tanto, la app obtiene los datos disponibles desde `GET /api/cuotas/` y no inventa un desglose cuando la API no lo entrega.
 - **Autenticación:** `Bearer <access_token>`.
 - **Response `200 OK`:**
   ```json
@@ -137,8 +148,8 @@ Sube un comprobante de transferencia bancaria y lo asocia a una cuota específic
     "id": 42,
     "cuota_id": 101,
     "pago_id": 42,
-    "estado": "pendiente",
-    "mensaje": "El comprobante fue enviado y queda pendiente de revisión administrativa."
+    "estado": "en revisión",
+    "mensaje": "El comprobante fue enviado y quedó en revisión administrativa."
   }
   ```
 - **Response `400 Bad Request`:**
@@ -147,6 +158,10 @@ Sube un comprobante de transferencia bancaria y lo asocia a una cuota específic
       "detail": "Debe enviar el archivo del comprobante en 'archivo'."
   }
   ```
+
+El listado de cuotas incluye `comprobantes`. En cada elemento, `estado_pago` puede ser `pendiente`,
+`en revisión`, `pagado` o `rechazado`; `motivo_rechazo` contiene el motivo ingresado por administración
+cuando el estado es `rechazado`. La app muestra el estado y el motivo en la cuota y en el historial.
 
 ### `GET /api/comprobantes/{id}/archivo/`
 

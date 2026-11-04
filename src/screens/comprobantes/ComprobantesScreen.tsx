@@ -230,7 +230,7 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
 
             <View style={styles.noticeBox}>
               <Text style={styles.noticeText}>
-                Se aceptan PDF, JPG y PNG de hasta 5 MB. El pago quedará pendiente de revisión administrativa.
+                Se aceptan PDF, JPG y PNG de hasta 5 MB. Al enviarlo, el comprobante queda en revisión administrativa.
               </Text>
             </View>
             {error && <ErrorMessage message={error} />}

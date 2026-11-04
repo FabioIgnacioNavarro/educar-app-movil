@@ -28,6 +28,7 @@ export function DetalleCuotaModal({
 }: DetalleCuotaModalProps) {
   const [detalle, setDetalle] = useState<DetalleCuotaModel | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible || !cuotaId) {
@@ -37,14 +38,18 @@ export function DetalleCuotaModal({
     let isMounted = true;
 
     async function fetchDetalle(id: number) {
+      setLoading(true);
+      setError(null);
       try {
         const data = await cuotasService.getCuotaById(id);
         if (isMounted) {
           setDetalle(data);
+          setError(null);
         }
       } catch {
         if (isMounted) {
           setDetalle(null);
+          setError("No se pudo cargar la información real de esta cuota. Actualizá el listado e intentá de nuevo.");
         }
       } finally {
         if (isMounted) {
@@ -71,10 +76,17 @@ export function DetalleCuotaModal({
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          {loading || !detalle ? (
+          {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#1E3A8A" />
               <Text style={styles.loadingText}>Cargando desglose de conceptos...</Text>
+            </View>
+          ) : !detalle ? (
+            <View style={styles.loadingContainer}>
+              <Text style={styles.loadingText}>{error || "No se pudo cargar la cuota."}</Text>
+              <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
+                <Text style={styles.closeBtnText}>Cerrar</Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -97,9 +109,11 @@ export function DetalleCuotaModal({
                 <Text style={styles.infoValue}>{detalle.fechaVencimiento}</Text>
               </View>
 
-              {/* Desglose de Conceptos */}
-              <Text style={styles.sectionTitle}>Desglose Arancelario</Text>
-              <View style={styles.breakdownBox}>
+              {/* Desglose de Conceptos, si la API lo informa */}
+              {detalle.discriminacion ? (
+                <>
+                  <Text style={styles.sectionTitle}>Desglose Arancelario</Text>
+                  <View style={styles.breakdownBox}>
                 <View style={styles.breakdownRow}>
                   <Text style={styles.conceptName}>Cuota Base Escolar</Text>
                   <Text style={styles.conceptAmount}>
@@ -133,7 +147,13 @@ export function DetalleCuotaModal({
                     </Text>
                   </View>
                 )}
-              </View>
+                  </View>
+                </>
+              ) : (
+                <Text style={styles.loadingText}>
+                  El desglose por concepto no está disponible para esta cuota.
+                </Text>
+              )}
 
               {/* Totales y Saldo */}
               <View style={styles.totalsBox}>
@@ -175,21 +195,17 @@ export function DetalleCuotaModal({
                   <View key={comp.id} style={styles.compCard}>
                     <View style={styles.compHeader}>
                       <Text style={styles.compId}>Comp. #{comp.id}</Text>
-                      <Text
-                        style={[
-                          styles.compEstado,
-                          comp.estado.includes("aprob")
-                            ? styles.estadoAprobado
-                            : styles.estadoPendiente,
-                        ]}
-                      >
-                        {comp.estado.toUpperCase()}
-                      </Text>
+                      <StatusBadge estado={comp.estado} />
                     </View>
                     <View style={styles.compBody}>
                       <Text style={styles.compDate}>Fecha: {comp.fechaPago}</Text>
                       <Text style={styles.compAmount}>{comp.importeFormateado}</Text>
                     </View>
+                    {comp.motivoRechazo && (
+                      <Text style={styles.rejectionReason}>
+                        Motivo del rechazo: {comp.motivoRechazo}
+                      </Text>
+                    )}
                   </View>
                 ))
               )}
@@ -371,20 +387,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#1E293B",
   },
-  compEstado: {
-    fontSize: 10,
-    fontWeight: "700",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  estadoAprobado: {
-    backgroundColor: "#DCFCE7",
-    color: "#166534",
-  },
-  estadoPendiente: {
-    backgroundColor: "#FEF3C7",
-    color: "#92400E",
+  rejectionReason: {
+    color: "#991B1B",
+    backgroundColor: "#FEF2F2",
+    borderRadius: 7,
+    padding: 9,
+    marginTop: 8,
+    fontSize: 12,
+    lineHeight: 17,
   },
   compBody: {
     flexDirection: "row",

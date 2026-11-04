@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import { formatCurrency } from "../../utils/formatters";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { MainTabParamList } from "../../types/navigation";
 import { isAxiosError } from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
 type TabView = "vigentes" | "historial";
 
@@ -43,10 +44,8 @@ export function CuotasScreen({ navigation }: CuotasScreenProps) {
   async function loadData() {
     try {
       setError(null);
-      const [cuotasData, historialData] = await Promise.all([
-        cuotasService.getCuotas(),
-        cuotasService.getHistorialPagos(),
-      ]);
+      const cuotasData = await cuotasService.getCuotas();
+      const historialData = await cuotasService.getHistorialPagos(cuotasData);
       setCuotas(cuotasData);
       setHistorial(historialData);
     } catch (err: unknown) {
@@ -57,36 +56,36 @@ export function CuotasScreen({ navigation }: CuotasScreenProps) {
     }
   }
 
-  useEffect(() => {
-    let isMounted = true;
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
 
-    async function initData() {
-      try {
-        const [cuotasData, historialData] = await Promise.all([
-          cuotasService.getCuotas(),
-          cuotasService.getHistorialPagos(),
-        ]);
-        if (isMounted) {
-          setCuotas(cuotasData);
-          setHistorial(historialData);
-          setError(null);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          setError(getApiError(err));
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
+      async function initData() {
+        try {
+          const cuotasData = await cuotasService.getCuotas();
+          const historialData = await cuotasService.getHistorialPagos(cuotasData);
+          if (isMounted) {
+            setCuotas(cuotasData);
+            setHistorial(historialData);
+            setError(null);
+          }
+        } catch (err: unknown) {
+          if (isMounted) {
+            setError(getApiError(err));
+          }
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
         }
       }
-    }
 
-    void initData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+      void initData();
+      return () => {
+        isMounted = false;
+      };
+    }, [])
+  );
 
   function onRefresh() {
     setRefreshing(true);
@@ -117,7 +116,9 @@ export function CuotasScreen({ navigation }: CuotasScreenProps) {
 
   // Total abonado histórico
   const totalHistoricoAbonado = useMemo(() => {
-    return historial.reduce((acc, p) => acc + p.montoAbonado, 0);
+    return historial
+      .filter((p) => p.estado === "pagado")
+      .reduce((acc, p) => acc + p.montoAbonado, 0);
   }, [historial]);
 
   function handleVerDetalle(id: number) {
@@ -309,6 +310,20 @@ export function CuotasScreen({ navigation }: CuotasScreenProps) {
                       {item.saldoPendienteFormateado}
                     </Text>
                   </View>
+
+                  {item.comprobantes[0] && (
+                    <View style={styles.paymentReview}>
+                      <View style={styles.paymentReviewHeader}>
+                        <Text style={styles.detailLabel}>Último comprobante:</Text>
+                        <StatusBadge estado={item.comprobantes[0].estado} />
+                      </View>
+                      {item.comprobantes[0].motivoRechazo && (
+                        <Text style={styles.rejectionReason}>
+                          Motivo del rechazo: {item.comprobantes[0].motivoRechazo}
+                        </Text>
+                      )}
+                    </View>
+                  )}
                 </TouchableOpacity>
 
                 <View style={styles.cardActions}>
@@ -359,7 +374,7 @@ export function CuotasScreen({ navigation }: CuotasScreenProps) {
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyTitle}>Sin pagos registrados</Text>
                 <Text style={styles.emptyText}>
-                  Aún no se registran pagos o transferencias validadas.
+                  Aún no se enviaron comprobantes de pago.
                 </Text>
               </View>
             }
@@ -372,24 +387,29 @@ export function CuotasScreen({ navigation }: CuotasScreenProps) {
                       {item.alumnoNombre} • {item.alumnoCurso}
                     </Text>
                   </View>
-                  <View style={styles.pagoBadge}>
-                    <Text style={styles.pagoBadgeText}>ACREDITADO</Text>
-                  </View>
+                  <StatusBadge estado={item.estado} />
                 </View>
 
                 <View style={styles.divider} />
 
                 <View style={styles.detailsRow}>
-                  <Text style={styles.detailLabel}>Fecha de Transferencia:</Text>
+                  <Text style={styles.detailLabel}>Fecha del comprobante:</Text>
                   <Text style={styles.detailValue}>{item.fechaPago}</Text>
                 </View>
 
                 <View style={styles.detailsRow}>
-                  <Text style={styles.detailLabel}>Monto Cancelado:</Text>
+                  <Text style={styles.detailLabel}>
+                    {item.estado === "pagado" ? "Importe acreditado:" : "Importe informado:"}
+                  </Text>
                   <Text style={styles.historialMonto}>
                     {item.montoAbonadoFormateado}
                   </Text>
                 </View>
+                {item.motivoRechazo && (
+                  <Text style={styles.rejectionReason}>
+                    Motivo del rechazo: {item.motivoRechazo}
+                  </Text>
+                )}
               </Card>
             )}
           />
@@ -643,16 +663,27 @@ const styles = StyleSheet.create({
     color: "#475569",
     marginTop: 2,
   },
-  pagoBadge: {
-    backgroundColor: "#DCFCE7",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+  paymentReview: {
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#E2E8F0",
+    gap: 6,
   },
-  pagoBadgeText: {
-    fontSize: 10,
-    fontWeight: "800",
-    color: "#166534",
+  paymentReviewHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 8,
+  },
+  rejectionReason: {
+    color: "#991B1B",
+    backgroundColor: "#FEF2F2",
+    borderRadius: 7,
+    padding: 9,
+    marginTop: 8,
+    fontSize: 12,
+    lineHeight: 17,
   },
   historialMonto: {
     fontSize: 14,

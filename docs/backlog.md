@@ -66,6 +66,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M04:** Integración de `expo-document-picker` y `expo-image-picker` para adjuntar PDF/imágenes (#9).
 - [x] **HU_M04:** Consumo de `POST /api/comprobantes/` con envío multipart `{ uri, name, type }` (#9).
 - [x] **HU_M04:** Asociación del comprobante a la cuota correspondiente y confirmación visual (#9).
+- [x] **HU_M04:** Mostrar estados reales del comprobante y el motivo de rechazo en cuotas e historial (#9).
 
 - **DoD Sprint 2:** `HU_M02`, `HU_M03`, `HU_M04` y `HU_M05` completadas y validadas integralmente en emulador y dispositivo físico.
 

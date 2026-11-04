@@ -9,6 +9,6 @@ export interface ComprobanteUploadResponse {
   id: number;
   cuota_id: number;
   pago_id: number;
-  estado: "pendiente" | "aprobado" | "rechazado";
+  estado: "pendiente" | "en revisión" | "pagado" | "rechazado";
   mensaje: string;
 }
