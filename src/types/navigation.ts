@@ -11,7 +11,14 @@ export type AuthStackParamList = {
 
 export type MainTabParamList = {
   Cuotas: undefined;
-  Comprobantes: { facturaId?: number } | undefined;
+  Comprobantes:
+    | {
+        cuotaId?: number;
+        periodo?: string;
+        alumnoNombre?: string;
+        saldo?: number;
+      }
+    | undefined;
   Servicios: undefined;
   Perfil: undefined;
 };

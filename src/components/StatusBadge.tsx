@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { EstadoCuota } from "../types/cuota";
+import { EstadoCuota, EstadoPago } from "../types/cuota";
 
 interface StatusBadgeProps {
-  estado: EstadoCuota;
+  estado: EstadoCuota | EstadoPago;
 }
 
 export function StatusBadge({ estado }: StatusBadgeProps) {
@@ -18,7 +18,7 @@ export function StatusBadge({ estado }: StatusBadgeProps) {
   );
 }
 
-function getBadgeConfig(estado: EstadoCuota) {
+function getBadgeConfig(estado: EstadoCuota | EstadoPago) {
   switch (estado) {
     case "pagada":
       return { label: "PAGADA", bg: "#DCFCE7", text: "#166534" };
@@ -26,6 +26,12 @@ function getBadgeConfig(estado: EstadoCuota) {
       return { label: "PAGO PARCIAL", bg: "#FEF3C7", text: "#92400E" };
     case "vencida":
       return { label: "VENCIDA", bg: "#FEE2E2", text: "#991B1B" };
+    case "pagado":
+      return { label: "PAGADO", bg: "#DCFCE7", text: "#166534" };
+    case "en revisión":
+      return { label: "EN REVISIÓN", bg: "#FEF3C7", text: "#92400E" };
+    case "rechazado":
+      return { label: "RECHAZADO", bg: "#FEE2E2", text: "#991B1B" };
     case "pendiente":
     default:
       return { label: "PENDIENTE", bg: "#E0F2FE", text: "#075985" };

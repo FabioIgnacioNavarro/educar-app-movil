@@ -1,9 +1,23 @@
 export type EstadoCuota = "pendiente" | "parcial" | "pagada" | "vencida";
+export type EstadoPago = "pendiente" | "en revisión" | "pagado" | "rechazado";
+
+export interface ComprobanteItemDTO {
+  id: number;
+  estado: string;
+  estado_pago?: string;
+  fecha_envio?: string;
+  fecha_pago?: string;
+  importe?: string | number | null;
+  nombre_archivo?: string;
+  archivo_url?: string;
+  motivo_rechazo?: string | null;
+}
 
 export interface CuotaDTO {
   id: number;
   periodo: string;
   monto: string | number;
+  monto_total?: string | number;
   monto_pagado?: string | number;
   fecha_vencimiento?: string;
   estado: string;
@@ -13,6 +27,7 @@ export interface CuotaDTO {
     curso?: string;
   };
   factura_id?: number;
+  comprobantes?: ComprobanteItemDTO[];
 }
 
 export interface CuotaModel {
@@ -30,6 +45,7 @@ export interface CuotaModel {
   alumnoLegajo: number;
   alumnoCurso: string;
   facturaId?: number;
+  comprobantes: ComprobanteItemModel[];
 }
 
 export interface DeporteItemDTO {
@@ -46,18 +62,11 @@ export interface ComedorItemDTO {
   monto: string | number;
 }
 
-export interface ComprobanteItemDTO {
-  id: number;
-  fecha_pago: string;
-  importe: string | number;
-  estado: string;
-  archivo_url: string;
-}
-
 export interface DetalleCuotaDTO {
   id: number;
   periodo: string;
   monto_total: string | number;
+  monto_pagado?: string | number;
   fecha_vencimiento?: string;
   estado: string;
   alumno?: {
@@ -66,13 +75,13 @@ export interface DetalleCuotaDTO {
     curso?: string;
   };
   factura_id?: number;
-  discriminacion: {
+  discriminacion?: {
     cuota_base: string | number;
     deportes: DeporteItemDTO[];
     transporte?: TransporteItemDTO | null;
     comedor?: ComedorItemDTO | null;
   };
-  comprobantes: ComprobanteItemDTO[];
+  comprobantes?: ComprobanteItemDTO[];
 }
 
 export interface DeporteItemModel {
@@ -97,12 +106,14 @@ export interface ComprobanteItemModel {
   fechaPago: string;
   importe: number;
   importeFormateado: string;
-  estado: string;
+  estado: EstadoPago;
   archivoUrl: string;
+  nombreArchivo?: string;
+  motivoRechazo?: string;
 }
 
 export interface DetalleCuotaModel extends CuotaModel {
-  discriminacion: {
+  discriminacion?: {
     cuotaBase: number;
     cuotaBaseFormateada: string;
     deportes: DeporteItemModel[];
@@ -122,6 +133,7 @@ export interface PagoHistorialModel {
   fechaPago: string;
   montoAbonado: number;
   montoAbonadoFormateado: string;
-  estado: string;
+  estado: EstadoPago;
   archivoUrl?: string;
+  motivoRechazo?: string;
 }
