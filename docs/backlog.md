@@ -17,7 +17,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M03** | Sprint 2 | Consultar historial completo de pagos (#8) | Media | `terminado` | Navarro | Pagos ordenados por fecha, desglose de montos y comprobantes asociados |
 | **HU_M04** | Sprint 2 | Cargar comprobante de transferencia (PDF/imagen) (#9, PR #12) | Alta | `terminado` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a cuota, validación y estados visibles con motivo de rechazo |
 | **HU_M05** | Sprint 2 | Consultar inscripciones a deportes, transporte y comedor (#10) | Media | `terminado` | Navarro | Límite máx. 2 deportes, recorrido asignado y valores vigentes |
-| **FIX-02** | Sprint 2 | No presentar aranceles no informados como gratuitos (#13) | Media | `en progreso` | Echeverría | La app distingue precios nulos y no calcula un total falso |
+| **FIX-02** | Sprint 2 | No presentar aranceles no informados como gratuitos (#13) | Media | `terminado` | Echeverría | La app distingue precios nulos y no calcula un total falso |
 | **HU_M06** | Sprint 3 | Recibir notificación de factura mensual emitida | Alta | `pendiente` | Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto |
 | **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) | Media | `pendiente` | Echeverría | Tarea día 20, solo a tutores con deuda, monto pendiente |
 | **HU_M08** | Sprint 3 | Consultar reportes de facturas por período (Tutor) | Media | `pendiente` | Navarro | Filtro de fechas, listado de comprobantes asociados |
@@ -40,7 +40,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 
 ---
 
-### 🔹 Sprint 2 — Módulo Integral del Tutor: Cuotas, Historial, Comprobantes y Servicios [EN CURSO 🚀]
+### 🔹 Sprint 2 — Módulo Integral del Tutor: Cuotas, Historial, Comprobantes y Servicios [EN REVISIÓN 🔎]
 *(Consolida Sprints Teóricos 2, 3 y 4 — Cierra el 100% de la operatoria del Padre/Tutor)*
 
 > **División de Trabajo en Paralelo (Sin Bloqueos):**
@@ -58,14 +58,14 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M05:** Visualización de deportes asignados (validación de máx. 2) y sus aranceles (#10).
 - [x] **HU_M05:** Visualización del recorrido de transporte escolar y estado de comedor (#10).
 
-- [ ] **FIX-02 (#13):** Representar aranceles ausentes como “No informado” y no calcular un total mensual falso.
+- [x] **FIX-02 (#13):** Representar aranceles ausentes como “No informado” y no calcular un total mensual falso.
 
 #### 👤 Tareas Eje B (Maximiliano Echeverría - Backend DRF + Comprobantes):
-- [ ] **BACKEND:** Endpoint `GET /api/cuotas/` con filtrado por rol Tutor en `educar_pagina` (`RNF_M04`).
-- [ ] **BACKEND:** Endpoint `GET /api/cuotas/{id}/` con detalle y desglose de conceptos en `educar_pagina`.
-- [ ] **BACKEND:** Endpoint `POST /api/comprobantes/` receptor de archivos multipart en `educar_pagina`.
-- [ ] **BACKEND:** Endpoint `GET /api/servicios/inscripciones/` para consulta de servicios en `educar_pagina`.
-- [ ] **CHORE-04:** Wireframes de selector de comprobantes y vista previa en móvil.
+- [x] **BACKEND:** Endpoint `GET /api/cuotas/` con filtrado por rol Tutor en `educar_pagina` (`RNF_M04`).
+- [x] **BACKEND:** Endpoint `GET /api/cuotas/{id}/` con detalle y desglose de conceptos en `educar_pagina`.
+- [x] **BACKEND:** Endpoint `POST /api/comprobantes/` receptor de archivos multipart en `educar_pagina`.
+- [x] **BACKEND:** Endpoint `GET /api/servicios/inscripciones/` para consulta de servicios en `educar_pagina`.
+- [x] **CHORE-04:** Wireframes de selector de comprobantes y vista previa en móvil ([diseño en Figma](https://www.figma.com/design/FC2LWtGL00wjyvqODzbqSX/Educar-para-transformar?node-id=0-1&t=0Ipl9GgzGKmQpafH-1)).
 - [x] **HU_M04:** Integración de `expo-document-picker` y `expo-image-picker` para adjuntar PDF/imágenes (#9).
 - [x] **HU_M04:** Consumo de `POST /api/comprobantes/` con envío multipart `{ uri, name, type }` (#9).
 - [x] **HU_M04:** Asociación del comprobante a la cuota correspondiente y confirmación visual (#9).
@@ -73,7 +73,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **TEST-M04:** Contratos Playwright locales para cuotas, motivo de rechazo, validación multipart y carga con estado `en revisión`.
 - [x] **TEST-M04:** Verificar desde Expo Go en dispositivo la carga, estados `en revisión`/`pagado`/`rechazado`, motivo visible y saldo actualizado tras la aprobación.
 
-- **DoD Sprint 2:** `HU_M02`, `HU_M03`, `HU_M04` y `HU_M05` completadas y validadas integralmente en emulador y dispositivo físico.
+- **DoD Sprint 2:** `HU_M02`, `HU_M03`, `HU_M04` y `HU_M05` completadas y validadas integralmente en Expo Go y en el sitio administrativo. Joel confirmó la carga real de archivos y las transiciones de estado. Los wireframes de selector y vista previa están documentados en Figma mediante `CHORE-04`.
 
 ---
 
