@@ -18,11 +18,14 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M04** | Sprint 2 | Cargar comprobante de transferencia (PDF/imagen) (#9, PR #12) | Alta | `terminado` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a cuota, validación y estados visibles con motivo de rechazo |
 | **HU_M05** | Sprint 2 | Consultar inscripciones a deportes, transporte y comedor (#10) | Media | `terminado` | Navarro | Límite máx. 2 deportes, recorrido asignado y valores vigentes |
 | **FIX-02** | Sprint 2 | No presentar aranceles no informados como gratuitos (#13) | Media | `terminado` | Echeverría | La app distingue precios nulos y no calcula un total falso |
-| **HU_M06** | Sprint 3 | Recibir notificación de factura mensual emitida (#17) | Alta | `en revisión` | Navarro / Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto (PR #31 backend) |
-| **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) (#18) | Media | `en revisión` | Navarro / Echeverría | Tarea día 20, solo a tutores con deuda, exclusión comprobantes en revisión (PR #31 backend) |
+| **HU_M06** | Sprint 3 | Recibir notificación de factura mensual emitida (#17) | Alta | `terminado` | Navarro / Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto (PR #31 backend fusionada) |
+| **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) (#18) | Media | `terminado` | Navarro / Echeverría | Tarea día 20, solo a tutores con deuda, exclusión comprobantes en revisión (PR #31 backend fusionada) |
 | **HU_M08** | Sprint 3 | Consultar reportes de facturas por período (Tutor) (#19) | Media | `terminado` | Navarro | Filtro de fechas, listado de comprobantes asociados |
 | **HU_M09** | Sprint 3 | Consultar historial de deuda discriminado (Tutor) (#20) | Media | `terminado` | Navarro | Desglose por concepto (cuota, deporte, transporte, comedor) |
 | **HU_M10** | Sprint 3 | Consultar reportes administrativos móviles (Admin) (#21) | Alta | `terminado` | Navarro / Echeverría | Ingresos del período, pagos completos e incompletos |
+| **CHORE-07** | Sprint 3 | Pruebas integrales en emulador y dispositivo real (#23) | Alta | `pendiente` | Navarro / Echeverría | Verificación E2E de flujos móvil + backend en sesión presencial |
+| **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `pendiente` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK instalable descargable |
+| **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
 
 ---
 
@@ -86,7 +89,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M08:** Reporte de facturas y comprobantes por rango de fechas (Tutor) (#19, PR #22).
 - [x] **HU_M09:** Historial de deuda discriminado por ítems (Tutor) (#20, PR #22).
 - [x] **HU_M10:** Reportes administrativos móviles (Ingresos, recaudación, estados de deuda) (#21, PR #22).
-- [ ] **CHORE-07:** Pruebas integrales en emulador Android y dispositivo físico real (asignado a sesión presencial Navarro / Echeverría).
-- [ ] **CHORE-08:** Compilación de APK de producción mediante EAS Build (`eas build -p android`) (asignado a sesión presencial Navarro / Echeverría).
-- [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra.
+- [ ] **CHORE-07:** Pruebas integrales en emulador Android y dispositivo físico real (#23, asignado a sesión presencial Navarro / Echeverría).
+- [ ] **CHORE-08:** Compilación de APK de producción mediante EAS Build (`eas build -p android`) (#24, asignado a sesión presencial Navarro / Echeverría).
+- [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra (#25).
 - **DoD Sprint 3:** 100% de las historias completadas. APK instalable generada y proyecto final entregado.
