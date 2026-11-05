@@ -196,6 +196,9 @@ Consulta las inscripciones activas a deportes, transporte y comedor de los hijos
   ]
   ```
 
+
+Los importes monto_mensual pueden ser null cuando el backend no tiene un arancel mensual registrado. La app debe mostrar “No informado”, nunca “$0” por falta de dato. El total mensual también se muestra como “No informado” si alguna inscripción activa carece de precio.
+
 ---
 
 ## 5. Módulo Reportes
