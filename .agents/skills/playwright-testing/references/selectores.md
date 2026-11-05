@@ -9,7 +9,7 @@
 | `/api/auth/password-reset/` | POST | Pública | `HU_M01` | Solicitud de cambio de contraseña por correo. |
 | `/api/cuotas/` | GET | Bearer (Tutor) | `HU_M02`, `HU_M03` | Listado de cuotas (pendientes, vencidas y pagadas) de los alumnos a cargo del tutor. Permite filtro `?periodo=2026-11`. |
 | `/api/cuotas/<id>/` | GET | Bearer (Tutor) | `HU_M02` | Detalle específico de una cuota e importes discriminados. |
-| `/api/comprobantes/` | POST | Bearer (Tutor) | `HU_M04` | Carga multipart de comprobante (archivo PDF/imagen, fecha_pago, importe, factura_id). |
+| `/api/comprobantes/` | POST | Bearer (Tutor) | `HU_M04` | Carga multipart con `cuota_id`, `importe`, `medio_pago` y `archivo` (PDF/imagen); respuesta `en revisión`. |
 | `/api/facturas/` | GET | Bearer (Tutor) | `HU_M08` | Listado de facturas emitidas por período. |
 | `/api/deuda/historial/` | GET | Bearer (Tutor) | `HU_M09` | Historial de deuda discriminado por ítem (cuota base, deportes, transporte, comedor). |
 | `/api/servicios/inscripciones/` | GET | Bearer (Tutor) | `HU_M05` | Inscripciones activas de los hijos a deportes (máx. 2), transporte y comedor con sus valores. |

@@ -38,7 +38,8 @@ flowchart TD
    - Validar códigos de estado HTTP estándar: `200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`.
 
 3. **Pruebas de Subida Multipart (HU_M04 / RF_M08):**
-   - El endpoint `POST /api/comprobantes/` debe ser probado enviando archivos válidos (PDF y PNG/JPG) junto con el `factura_id`, validando que se asocie correctamente.
+   - El endpoint `POST /api/comprobantes/` debe ser probado enviando `cuota_id`, `importe`, `medio_pago` y un archivo multipart válido (PDF o imagen), validando que se asocie a la cuota y quede `en revisión`.
+   - Las pruebas que crean comprobantes solo pueden ejecutarse contra Django local o un entorno aislado de pruebas; no deben cargar archivos en PythonAnywhere/producción.
 
 4. **Selectores de Accesibilidad y TestID (UI Móvil):**
    - En vistas móviles (Expo Web / emulación), priorizar `page.getByTestId(...)` o accesibilidad: `page.getByRole('button', { name: /iniciar sesión/i })`, `page.getByLabel('Usuario o Correo')`.
@@ -51,7 +52,8 @@ flowchart TD
 Utilizan la fixture `{ request }` de Playwright para validar directamente los endpoints de Django REST Framework:
 - **Autenticación (`HU_M01`):** `POST /api/auth/login/` devuelve `access` y `refresh` JWT, rol del usuario e información de perfil.
 - **Cuotas e Historial (`HU_M02`, `HU_M03`):** `GET /api/cuotas/` devuelve cuotas discriminadas por estado (`pendiente`, `pagada`, `vencida`).
-- **Carga de Comprobantes (`HU_M04`):** `POST /api/comprobantes/` recibe archivo multipart y retorna estado `pendiente_validacion`.
+- **Carga de Comprobantes (`HU_M04`):** `POST /api/comprobantes/` recibe `cuota_id`, `importe`, `medio_pago` y `archivo` como multipart, y retorna estado `en revisión`.
+- **Estados financieros (`HU_M02` a `HU_M04`):** `GET /api/cuotas/` incluye `estado_pago` y `motivo_rechazo` por comprobante; si el estado es `rechazado`, el motivo debe estar presente.
 - **Servicios (`HU_M05`):** `GET /api/servicios/inscripciones/` devuelve deportes (máx. 2), transporte y comedor.
 - **Reportes Financieros (`HU_M08` a `HU_M10`):** Consulta por rango de fechas y reportes administrativos.
 
@@ -80,6 +82,16 @@ npx.cmd playwright test --reporter=list
 # Abrir el reporte gráfico de Playwright
 npx.cmd playwright show-report
 ```
+
+Para probar una carga exitosa, ejecutar contra el backend local y proporcionar una cuota local asociada al tutor de prueba:
+
+```powershell
+$env:EXPO_PUBLIC_API_URL = "http://127.0.0.1:8000/api"
+$env:MOBILE_TEST_CUOTA_ID = "<id-cuota-local>"
+npm.cmd run test:contracts -- --workers=1 --reporter=list
+```
+
+Las credenciales del tutor se pueden proporcionar con `MOBILE_TEST_TUTOR_USERNAME` y `MOBILE_TEST_TUTOR_PASSWORD`. La prueba de carga se omite fuera de `localhost`/`127.0.0.1` para evitar crear comprobantes en producción.
 
 ---
 

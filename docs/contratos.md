@@ -89,8 +89,7 @@ Obtiene las cuotas de los alumnos a cargo del tutor autenticado (aislamiento RNF
         "legajo": 1245,
         "nombre_completo": "Mateo Pérez",
         "curso": "3° Año A - Secundaria"
-      },
-      "factura_id": 87
+      }
     }
   ]
   ```

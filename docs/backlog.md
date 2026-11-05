@@ -67,6 +67,8 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M04:** Consumo de `POST /api/comprobantes/` con envío multipart `{ uri, name, type }` (#9).
 - [x] **HU_M04:** Asociación del comprobante a la cuota correspondiente y confirmación visual (#9).
 - [x] **HU_M04:** Mostrar estados reales del comprobante y el motivo de rechazo en cuotas e historial (#9).
+- [x] **TEST-M04:** Contratos Playwright locales para cuotas, motivo de rechazo, validación multipart y carga con estado `en revisión`.
+- [ ] **TEST-M04:** Verificar desde Expo Go en dispositivo que la carga de un archivo real se refleja al volver a Cuotas/Historial.
 
 - **DoD Sprint 2:** `HU_M02`, `HU_M03`, `HU_M04` y `HU_M05` completadas y validadas integralmente en emulador y dispositivo físico.
 
