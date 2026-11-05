@@ -17,6 +17,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M03** | Sprint 2 | Consultar historial completo de pagos (#8) | Media | `terminado` | Navarro | Pagos ordenados por fecha, desglose de montos y comprobantes asociados |
 | **HU_M04** | Sprint 2 | Cargar comprobante de transferencia (PDF/imagen) (#9, PR #12) | Alta | `terminado` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a cuota, validación y estados visibles con motivo de rechazo |
 | **HU_M05** | Sprint 2 | Consultar inscripciones a deportes, transporte y comedor (#10) | Media | `terminado` | Navarro | Límite máx. 2 deportes, recorrido asignado y valores vigentes |
+| **FIX-02** | Sprint 2 | No presentar aranceles no informados como gratuitos (#13) | Media | `en progreso` | Echeverría | La app distingue precios nulos y no calcula un total falso |
 | **HU_M06** | Sprint 3 | Recibir notificación de factura mensual emitida | Alta | `pendiente` | Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto |
 | **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) | Media | `pendiente` | Echeverría | Tarea día 20, solo a tutores con deuda, monto pendiente |
 | **HU_M08** | Sprint 3 | Consultar reportes de facturas por período (Tutor) | Media | `pendiente` | Navarro | Filtro de fechas, listado de comprobantes asociados |
@@ -56,6 +57,8 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M05:** Consumo de `GET /api/servicios/inscripciones/` (#10).
 - [x] **HU_M05:** Visualización de deportes asignados (validación de máx. 2) y sus aranceles (#10).
 - [x] **HU_M05:** Visualización del recorrido de transporte escolar y estado de comedor (#10).
+
+- [ ] **FIX-02 (#13):** Representar aranceles ausentes como “No informado” y no calcular un total mensual falso.
 
 #### 👤 Tareas Eje B (Maximiliano Echeverría - Backend DRF + Comprobantes):
 - [ ] **BACKEND:** Endpoint `GET /api/cuotas/` con filtrado por rol Tutor en `educar_pagina` (`RNF_M04`).

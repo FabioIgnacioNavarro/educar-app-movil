@@ -7,59 +7,64 @@ import {
 } from "../types/servicio";
 import { formatCurrency } from "../utils/formatters";
 
+function parseMonthlyAmount(value: string | number | null | undefined): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const amount = typeof value === "string" ? Number.parseFloat(value) : value;
+  return Number.isFinite(amount) ? amount : null;
+}
+
+function formatMonthlyAmount(value: number | null): string {
+  return value === null ? "No informado" : formatCurrency(value);
+}
+
 /**
  * Adaptador de Servicios Extracurriculares - PATRÓN ESTRUCTURAL: ADAPTER (ADR 0003)
  * Convierte DTOs de DRF (/api/servicios/inscripciones/) al modelo de vista institucional.
  */
 export function adaptAlumnoServicios(dto: AlumnoServiciosDTO): AlumnoServiciosModel {
   const deportes: DeporteModel[] = (dto.deportes || []).map((d) => {
-    const monto =
-      typeof d.monto_mensual === "string"
-        ? parseFloat(d.monto_mensual)
-        : d.monto_mensual || 0;
+    const monto = parseMonthlyAmount(d.monto_mensual);
     return {
       id: d.id,
       nombre: d.nombre,
       montoMensual: monto,
-      montoMensualFormateado: formatCurrency(monto),
+      montoMensualFormateado: formatMonthlyAmount(monto),
       horario: d.horario || "Horario a coordinar",
     };
   });
 
   let transporte: TransporteModel | null = null;
   if (dto.transporte) {
-    const monto =
-      typeof dto.transporte.monto_mensual === "string"
-        ? parseFloat(dto.transporte.monto_mensual)
-        : dto.transporte.monto_mensual || 0;
+    const monto = parseMonthlyAmount(dto.transporte.monto_mensual);
     transporte = {
       idInscripcion: dto.transporte.id_inscripcion,
       recorrido: dto.transporte.recorrido,
       montoMensual: monto,
-      montoMensualFormateado: formatCurrency(monto),
+      montoMensualFormateado: formatMonthlyAmount(monto),
       estado: dto.transporte.estado || "Activo",
     };
   }
 
   let comedor: ComedorModel | null = null;
   if (dto.comedor) {
-    const monto =
-      typeof dto.comedor.monto_mensual === "string"
-        ? parseFloat(dto.comedor.monto_mensual)
-        : dto.comedor.monto_mensual || 0;
+    const monto = parseMonthlyAmount(dto.comedor.monto_mensual);
     comedor = {
       idInscripcion: dto.comedor.id_inscripcion,
       montoMensual: monto,
-      montoMensualFormateado: formatCurrency(monto),
+      montoMensualFormateado: formatMonthlyAmount(monto),
       estado: dto.comedor.estado || "Activo",
       detalleMenu: dto.comedor.detalle_menu || "Menú Nutricional Completo",
     };
   }
 
-  const sumaDeportes = deportes.reduce((acc, d) => acc + d.montoMensual, 0);
-  const sumaTransporte = transporte ? transporte.montoMensual : 0;
-  const sumaComedor = comedor ? comedor.montoMensual : 0;
-  const totalMensualServicios = sumaDeportes + sumaTransporte + sumaComedor;
+  const importes = [
+    ...deportes.map((deporte) => deporte.montoMensual),
+    ...(transporte ? [transporte.montoMensual] : []),
+    ...(comedor ? [comedor.montoMensual] : []),
+  ];
+  const totalMensualServicios = importes.some((importe) => importe === null)
+    ? null
+    : importes.reduce<number>((total, importe) => total + (importe ?? 0), 0);
 
   return {
     alumnoLegajo: dto.alumno?.legajo || 0,
@@ -70,7 +75,7 @@ export function adaptAlumnoServicios(dto: AlumnoServiciosDTO): AlumnoServiciosMo
     transporte,
     comedor,
     totalMensualServicios,
-    totalMensualServiciosFormateado: formatCurrency(totalMensualServicios),
+    totalMensualServiciosFormateado: formatMonthlyAmount(totalMensualServicios),
   };
 }
 
