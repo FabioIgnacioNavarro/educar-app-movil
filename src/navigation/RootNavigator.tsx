@@ -59,6 +59,11 @@ function MainTabNavigator() {
         options={{ title: "Servicios" }}
       />
       <MainTabs.Screen
+        name="Reportes"
+        component={ReportesScreen}
+        options={{ title: "Reportes" }}
+      />
+      <MainTabs.Screen
         name="Perfil"
         component={PerfilScreen}
         options={{ title: "Mi Perfil" }}

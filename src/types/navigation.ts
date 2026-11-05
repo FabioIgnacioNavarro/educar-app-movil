@@ -20,6 +20,7 @@ export type MainTabParamList = {
       }
     | undefined;
   Servicios: undefined;
+  Reportes: undefined;
   Perfil: undefined;
 };
 
