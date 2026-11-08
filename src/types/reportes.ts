@@ -8,6 +8,8 @@ export interface ReporteIngresosDTO {
   porcentaje_cobranza: number;
   ingresos_cuota_base?: string | number;
   ingresos_servicios?: string | number;
+  ingresos_sin_desglose?: string | number;
+  cuotas_sin_desglose?: number;
   cantidad_cuotas_cobradas?: number;
   cantidad_cuotas_pendientes?: number;
 }
@@ -25,6 +27,9 @@ export interface ReporteIngresosModel {
   ingresosCuotaBaseFormateado: string;
   ingresosServicios: number;
   ingresosServiciosFormateado: string;
+  ingresosSinDesglose: number;
+  ingresosSinDesgloseFormateado: string;
+  cuotasSinDesglose: number;
   cantidadCuotasCobradas: number;
   cantidadCuotasPendientes: number;
 }
@@ -186,3 +191,40 @@ export interface DeudaDiscriminadaModel {
   deudaComedorFormateado: string;
   desgloseAlumnos: DeudaItemAlumnoModel[];
 }
+
+export interface ReporteCategoriaFinancieraDTO {
+  nombre: string;
+  facturado: string | number;
+  pagado: string | number;
+}
+
+export interface ReporteDesgloseFinancieroDTO {
+  mes: number;
+  anio: number;
+  deportes: ReporteCategoriaFinancieraDTO[];
+  niveles: ReporteCategoriaFinancieraDTO[];
+  horarios: ReporteCategoriaFinancieraDTO[];
+  docentes: ReporteCategoriaFinancieraDTO[];
+  recorridos: ReporteCategoriaFinancieraDTO[];
+  cuotas_sin_desglose: number;
+  facturado_sin_desglose: string | number;
+  pagado_sin_desglose: string | number;
+}
+
+export interface ReporteCategoriaFinancieraModel {
+  nombre: string;
+  facturadoFormateado: string;
+  pagadoFormateado: string;
+}
+
+export interface ReporteDesgloseFinancieroModel {
+  deportes: ReporteCategoriaFinancieraModel[];
+  niveles: ReporteCategoriaFinancieraModel[];
+  horarios: ReporteCategoriaFinancieraModel[];
+  docentes: ReporteCategoriaFinancieraModel[];
+  recorridos: ReporteCategoriaFinancieraModel[];
+  cuotasSinDesglose: number;
+  facturadoSinDesgloseFormateado: string;
+  pagadoSinDesgloseFormateado: string;
+}
+
