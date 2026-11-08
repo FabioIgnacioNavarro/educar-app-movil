@@ -6,6 +6,8 @@ const API_BASE_URL = (process.env.EXPO_PUBLIC_API_URL ?? "http://127.0.0.1:8000/
 const TUTOR_IDENTIFIER = process.env.MOBILE_TEST_TUTOR_USERNAME ?? "rperez";
 const TUTOR_PASSWORD = process.env.MOBILE_TEST_TUTOR_PASSWORD ?? "pass1234";
 const TEST_QUOTA_ID = process.env.MOBILE_TEST_CUOTA_ID;
+const TEST_CONCEPT_KEY = process.env.MOBILE_TEST_CONCEPTO_KEY;
+const TEST_CONCEPT_AMOUNT = process.env.MOBILE_TEST_CONCEPTO_IMPORTE;
 
 const isLocalApi = ["localhost", "127.0.0.1"].includes(new URL(API_BASE_URL).hostname);
 let loginStatus = 0;
@@ -89,6 +91,7 @@ test.describe("Contratos de API REST - Centro Educativo Transformar para educar"
       expect(cuota).toHaveProperty("saldo");
       expect(cuota).toHaveProperty("estado");
       expect(cuota).toHaveProperty("alumno");
+      expect(Array.isArray(cuota.conceptos_pago)).toBe(true);
       expect(Array.isArray(cuota.comprobantes)).toBe(true);
       for (const comprobante of cuota.comprobantes) {
         expect(comprobante).toHaveProperty("estado_pago");
@@ -113,12 +116,14 @@ test.describe("Contratos de API REST - Centro Educativo Transformar para educar"
   test("HU_M04: carga multipart deja el comprobante en revisión y lo devuelve en cuotas", async ({ request }) => {
     test.skip(!isLocalApi, "La carga crea registros; se permite solo contra Django local.");
     test.skip(!TEST_QUOTA_ID, "Prepará una cuota local asociada al tutor y define MOBILE_TEST_CUOTA_ID.");
+    test.skip(!TEST_CONCEPT_KEY || !TEST_CONCEPT_AMOUNT, "Define la clave e importe completo de un concepto de esa cuota.");
 
     const upload = await request.post(`${API_BASE_URL}/comprobantes/`, {
       headers: { Authorization: `Bearer ${tutorToken}` },
       multipart: {
         cuota_id: TEST_QUOTA_ID as string,
-        importe: "1.00",
+        importe: TEST_CONCEPT_AMOUNT as string,
+        conceptos_seleccionados: JSON.stringify([TEST_CONCEPT_KEY]),
         medio_pago: "Transferencia",
         archivo: {
           name: "comprobante-playwright.pdf",
@@ -143,5 +148,8 @@ test.describe("Contratos de API REST - Centro Educativo Transformar para educar"
       estado_pago: "en revisión",
       motivo_rechazo: null,
     });
+    const concepto = cuota.conceptos_pago.find((item: { clave: string }) => item.clave === TEST_CONCEPT_KEY);
+    expect(concepto).toBeDefined();
+    expect(concepto.saldo_disponible).toBe("0.00");
   });
 });

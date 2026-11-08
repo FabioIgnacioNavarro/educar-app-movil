@@ -72,8 +72,51 @@ Obtiene las cuotas de los alumnos a cargo del tutor autenticado (aislamiento RNF
       "periodo": "Noviembre 2026",
       "monto": "45000.00",
       "monto_pagado": "0.00",
+      "saldo": "45000.00",
       "fecha_vencimiento": "2026-11-10",
       "estado": "pendiente",
+      "conceptos_pago": [
+        {
+          "clave": "cuota_base",
+          "tipo": "cuota_base",
+          "concepto": "Cuota base (Primario)",
+          "monto": "30000.00",
+          "monto_pagado": "0.00",
+          "monto_en_revision": "0.00",
+          "saldo_disponible": "30000.00",
+          "bloqueado_por_revision": false
+        },
+        {
+          "clave": "deporte:8",
+          "tipo": "deporte",
+          "concepto": "Deporte: Fútbol",
+          "monto": "5000.00",
+          "monto_pagado": "0.00",
+          "monto_en_revision": "0.00",
+          "saldo_disponible": "5000.00",
+          "bloqueado_por_revision": false
+        },
+        {
+          "clave": "deporte:9",
+          "tipo": "deporte",
+          "concepto": "Deporte: Básquet",
+          "monto": "4000.00",
+          "monto_pagado": "0.00",
+          "monto_en_revision": "0.00",
+          "saldo_disponible": "4000.00",
+          "bloqueado_por_revision": false
+        },
+        {
+          "clave": "transporte:2",
+          "tipo": "transporte",
+          "concepto": "Transporte: Recorrido 2 - Centro",
+          "monto": "6000.00",
+          "monto_pagado": "0.00",
+          "monto_en_revision": "0.00",
+          "saldo_disponible": "6000.00",
+          "bloqueado_por_revision": false
+        }
+      ],
       "comprobantes": [
         {
           "id": 42,
@@ -138,9 +181,15 @@ Sube un comprobante de transferencia bancaria y lo asocia a una cuota específic
 - **Content-Type:** `multipart/form-data`.
 - **Form Data Fields:**
   - `cuota_id`: ID numérico de la cuota.
-  - `importe`: Monto a acreditar; debe ser positivo y no superar el saldo pendiente.
+  - `conceptos_seleccionados`: lista JSON con una o más claves de `conceptos_pago`. Cada concepto se paga por el saldo completo disponible; el backend valida la lista y el total.
+  - `importe`: suma exacta de los saldos completos de los conceptos seleccionados; debe ser positivo.
   - `medio_pago`: medio de pago (opcional, por defecto `Transferencia`).
   - `archivo`: Archivo binario (PDF, PNG o JPG).
+
+La app envía siempre `conceptos_seleccionados`. El backend conserva compatibilidad con clientes
+anteriores que omitan ese campo, pero la nueva interfaz no permite enviar un pago sin seleccionar
+conceptos. Un concepto con saldo en revisión o pagado no está disponible para otro envío. Para cuotas
+históricas sin desglose guardado, se muestra un concepto único por el saldo pendiente completo.
 - **Response `201 Created`:**
   ```json
   {

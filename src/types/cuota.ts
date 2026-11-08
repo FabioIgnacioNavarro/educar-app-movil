@@ -13,6 +13,17 @@ export interface ComprobanteItemDTO {
   motivo_rechazo?: string | null;
 }
 
+export interface ConceptoPagoDTO {
+  clave: string;
+  tipo: string;
+  concepto: string;
+  monto: string | number;
+  monto_pagado: string | number;
+  monto_en_revision: string | number;
+  saldo_disponible: string | number;
+  bloqueado_por_revision?: boolean;
+}
+
 export interface CuotaDTO {
   id: number;
   periodo: string;
@@ -27,6 +38,13 @@ export interface CuotaDTO {
     curso?: string;
   };
   factura_id?: number;
+  conceptos_pago?: ConceptoPagoDTO[];
+  discriminacion?: {
+    cuota_base: string | number;
+    deportes: DeporteItemDTO[];
+    transporte?: TransporteItemDTO | null;
+    comedor?: ComedorItemDTO | null;
+  };
   comprobantes?: ComprobanteItemDTO[];
 }
 
@@ -75,6 +93,7 @@ export interface DetalleCuotaDTO {
     curso?: string;
   };
   factura_id?: number;
+  conceptos_pago?: ConceptoPagoDTO[];
   discriminacion?: {
     cuota_base: string | number;
     deportes: DeporteItemDTO[];
@@ -112,7 +131,21 @@ export interface ComprobanteItemModel {
   motivoRechazo?: string;
 }
 
+export interface ConceptoPagoModel {
+  clave: string;
+  tipo: string;
+  concepto: string;
+  monto: number;
+  montoFormateado: string;
+  montoPagado: number;
+  montoEnRevision: number;
+  saldoDisponible: number;
+  saldoDisponibleFormateado: string;
+  bloqueadoPorRevision: boolean;
+}
+
 export interface DetalleCuotaModel extends CuotaModel {
+  conceptosPago: ConceptoPagoModel[];
   discriminacion?: {
     cuotaBase: number;
     cuotaBaseFormateada: string;
