@@ -23,8 +23,8 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M08** | Sprint 3 | Consultar reportes de facturas por período (Tutor) (#19) | Media | `terminado` | Navarro | Filtro de fechas, listado de comprobantes asociados |
 | **HU_M09** | Sprint 3 | Consultar historial de deuda discriminado (Tutor) (#20) | Media | `terminado` | Navarro | Desglose por concepto (cuota, deporte, transporte, comedor) |
 | **HU_M10** | Sprint 3 | Consultar reportes administrativos móviles (Admin) (#21) | Alta | `terminado` | Navarro / Echeverría | Ingresos del período, pagos completos e incompletos |
-| **HU_M11** | Extensión pagos | Pagar conceptos seleccionados de una cuota (#29) | Alta | `en revisión` | Navarro / Echeverría | El tutor selecciona conceptos completos; API persiste asignación y saldo por concepto |
-| **HU_M12** | Extensión pagos | Recibir correo al aprobar un pago (#30) | Media | `en revisión` | Echeverría | Correo idempotente al tutor con importe aprobado y saldo restante |
+| **HU_M11** | Extensión pagos | Pagar conceptos seleccionados de una cuota (#29) | Alta | `en revisión` | Navarro / Echeverría | Backend PR #41; app PR #31. El tutor selecciona conceptos completos; API persiste asignación y saldo por concepto |
+| **HU_M12** | Extensión pagos | Recibir correo al aprobar un pago (#30) | Media | `en revisión` | Echeverría | Backend PR #41. Correo idempotente al tutor con importe aprobado y saldo restante |
 | **CHORE-07** | Sprint 3 | Pruebas integrales en emulador y dispositivo real (#23) | Alta | `pendiente` | Navarro / Echeverría | Verificación E2E de flujos móvil + backend en sesión presencial |
 | **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `pendiente` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK instalable descargable |
 | **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
