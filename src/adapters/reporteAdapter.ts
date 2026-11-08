@@ -9,6 +9,8 @@ import {
   FacturaReporteModel,
   DeudaDiscriminadaDTO,
   DeudaDiscriminadaModel,
+  ReporteDesgloseFinancieroDTO,
+  ReporteDesgloseFinancieroModel,
 } from "../types/reportes";
 import { formatCurrency, formatDate } from "../utils/formatters";
 
@@ -61,6 +63,9 @@ export function adaptReporteIngresos(dto: ReporteIngresosDTO): ReporteIngresosMo
     ingresosCuotaBaseFormateado: formatCurrency(cuotaBase),
     ingresosServicios: servicios,
     ingresosServiciosFormateado: formatCurrency(servicios),
+    ingresosSinDesglose: Number(dto.ingresos_sin_desglose || 0),
+    ingresosSinDesgloseFormateado: formatCurrency(Number(dto.ingresos_sin_desglose || 0)),
+    cuotasSinDesglose: dto.cuotas_sin_desglose || 0,
     cantidadCuotasCobradas: dto.cantidad_cuotas_cobradas || 0,
     cantidadCuotasPendientes: dto.cantidad_cuotas_pendientes || 0,
   };
@@ -234,214 +239,26 @@ export function adaptDeudaDiscriminada(dto: DeudaDiscriminadaDTO): DeudaDiscrimi
   };
 }
 
-// --- Datasets Mock Institucionales para Desarrollo ---
+export function adaptReporteDesgloseFinanciero(
+  dto: ReporteDesgloseFinancieroDTO
+): ReporteDesgloseFinancieroModel {
+  const adaptarGrupo = (grupo: ReporteDesgloseFinancieroDTO["deportes"]) =>
+    (grupo || []).map((fila) => ({
+      nombre: fila.nombre,
+      facturadoFormateado: formatCurrency(Number(fila.facturado || 0)),
+      pagadoFormateado: formatCurrency(Number(fila.pagado || 0)),
+    }));
 
-export const MOCK_REPORTE_INGRESOS_ADMIN: ReporteIngresosDTO = {
-  mes: 11,
-  anio: 2026,
-  total_recaudado: "1840000.00",
-  total_facturado: "2300000.00",
-  porcentaje_cobranza: 80,
-  ingresos_cuota_base: "1350000.00",
-  ingresos_servicios: "490000.00",
-  cantidad_cuotas_cobradas: 46,
-  cantidad_cuotas_pendientes: 12,
-};
+  return {
+    deportes: adaptarGrupo(dto.deportes),
+    niveles: adaptarGrupo(dto.niveles),
+    horarios: adaptarGrupo(dto.horarios),
+    docentes: adaptarGrupo(dto.docentes),
+    recorridos: adaptarGrupo(dto.recorridos),
+    cuotasSinDesglose: dto.cuotas_sin_desglose || 0,
+    facturadoSinDesgloseFormateado: formatCurrency(Number(dto.facturado_sin_desglose || 0)),
+    pagadoSinDesgloseFormateado: formatCurrency(Number(dto.pagado_sin_desglose || 0)),
+  };
+}
 
-export const MOCK_PAGOS_COMPLETOS_ADMIN: PagoCompletoDTO[] = [
-  {
-    id: 1,
-    alumno_legajo: 1245,
-    alumno_nombre: "Mateo Pérez",
-    alumno_curso: "3° Año A - Secundaria",
-    tutor_nombre: "Juan Pérez",
-    monto_total: "45000.00",
-    fecha_cancelacion: "2026-11-05",
-    medio_pago: "Transferencia Bancaria",
-  },
-  {
-    id: 2,
-    alumno_legajo: 1120,
-    alumno_nombre: "Lucas Benítez",
-    alumno_curso: "4° Año B - Secundaria",
-    tutor_nombre: "María Morales",
-    monto_total: "52000.00",
-    fecha_cancelacion: "2026-11-04",
-    medio_pago: "Transferencia Bancaria",
-  },
-  {
-    id: 3,
-    alumno_legajo: 1344,
-    alumno_nombre: "Camila Romero",
-    alumno_curso: "2° Año A - Primaria",
-    tutor_nombre: "Esteban Romero",
-    monto_total: "38000.00",
-    fecha_cancelacion: "2026-11-02",
-    medio_pago: "Transferencia Bancaria",
-  },
-  {
-    id: 4,
-    alumno_legajo: 1401,
-    alumno_nombre: "Martina Díaz",
-    alumno_curso: "1° Año A - Secundaria",
-    tutor_nombre: "Valeria Gómez",
-    monto_total: "47500.00",
-    fecha_cancelacion: "2026-11-06",
-    medio_pago: "Transferencia Bancaria",
-  },
-];
 
-export const MOCK_PAGOS_INCOMPLETOS_ADMIN: PagoIncompletoDTO[] = [
-  {
-    id: 1,
-    alumno_legajo: 1350,
-    alumno_nombre: "Sofía Pérez",
-    alumno_curso: "1° Año B - Primaria",
-    tutor_nombre: "Juan Pérez",
-    tutor_email: "juan.perez@email.com",
-    tutor_telefono: "+54 9 379 411-2233",
-    monto_total: "38000.00",
-    monto_pagado: "0.00",
-    saldo_pendiente: "38000.00",
-    conceptos_adeudados: ["Cuota Base", "Gimnasia", "Transporte"],
-    estado: "pendiente",
-  },
-  {
-    id: 2,
-    alumno_legajo: 1289,
-    alumno_nombre: "Joaquín Rossi",
-    alumno_curso: "3° Año B - Secundaria",
-    tutor_nombre: "Carlos Rossi",
-    tutor_email: "carlos.rossi@email.com",
-    tutor_telefono: "+54 9 379 455-8899",
-    monto_total: "45000.00",
-    monto_pagado: "22500.00",
-    saldo_pendiente: "22500.00",
-    conceptos_adeudados: ["Saldo Cuota Base Noviembre"],
-    estado: "parcial",
-  },
-  {
-    id: 3,
-    alumno_legajo: 1198,
-    alumno_nombre: "Facundo Morales",
-    alumno_curso: "5° Año A - Secundaria",
-    tutor_nombre: "Susana Suárez",
-    tutor_email: "susana.suarez@email.com",
-    tutor_telefono: "+54 9 379 477-1122",
-    monto_total: "42000.00",
-    monto_pagado: "0.00",
-    saldo_pendiente: "42000.00",
-    conceptos_adeudados: ["Cuota Octubre", "Fútbol"],
-    estado: "vencida",
-  },
-];
-
-export const MOCK_FACTURAS_TUTOR: FacturaReporteDTO[] = [
-  {
-    id: 101,
-    numero_factura: "FC-0001-00000087",
-    fecha_emision: "2026-10-31",
-    periodo: "Noviembre 2026",
-    alumno_nombre: "Mateo Pérez",
-    alumno_curso: "3° Año A - Secundaria",
-    monto_total: "45000.00",
-    monto_pagado: "45000.00",
-    saldo: "0.00",
-    estado: "pagada",
-    comprobantes: [
-      {
-        id: 12,
-        fecha_pago: "2026-11-05",
-        importe: "45000.00",
-        estado: "aprobado",
-        archivo_url: "/media/comprobantes/comp_12.pdf",
-      },
-    ],
-  },
-  {
-    id: 102,
-    numero_factura: "FC-0001-00000088",
-    fecha_emision: "2026-10-31",
-    periodo: "Noviembre 2026",
-    alumno_nombre: "Sofía Pérez",
-    alumno_curso: "1° Año B - Primaria",
-    monto_total: "38000.00",
-    monto_pagado: "0.00",
-    saldo: "38000.00",
-    estado: "pendiente",
-    comprobantes: [],
-  },
-  {
-    id: 100,
-    numero_factura: "FC-0001-00000072",
-    fecha_emision: "2026-09-30",
-    periodo: "Octubre 2026",
-    alumno_nombre: "Mateo Pérez",
-    alumno_curso: "3° Año A - Secundaria",
-    monto_total: "45000.00",
-    monto_pagado: "45000.00",
-    saldo: "0.00",
-    estado: "pagada",
-    comprobantes: [
-      {
-        id: 8,
-        fecha_pago: "2026-10-08",
-        importe: "45000.00",
-        estado: "aprobado",
-        archivo_url: "/media/comprobantes/comp_08.pdf",
-      },
-    ],
-  },
-  {
-    id: 99,
-    numero_factura: "FC-0001-00000073",
-    fecha_emision: "2026-09-30",
-    periodo: "Octubre 2026",
-    alumno_nombre: "Sofía Pérez",
-    alumno_curso: "1° Año B - Primaria",
-    monto_total: "38000.00",
-    monto_pagado: "38000.00",
-    saldo: "0.00",
-    estado: "pagada",
-    comprobantes: [
-      {
-        id: 7,
-        fecha_pago: "2026-10-07",
-        importe: "38000.00",
-        estado: "aprobado",
-        archivo_url: "/media/comprobantes/comp_07.jpg",
-      },
-    ],
-  },
-];
-
-export const MOCK_DEUDA_DISCRIMINADA_TUTOR: DeudaDiscriminadaDTO = {
-  tutor_id: 14,
-  total_deuda: "38000.00",
-  deuda_cuota_base: "26000.00",
-  deuda_deportes: "6000.00",
-  deuda_transporte: "6000.00",
-  deuda_comedor: "0.00",
-  desglose_alumnos: [
-    {
-      alumno_legajo: 1245,
-      alumno_nombre: "Mateo Pérez",
-      alumno_curso: "3° Año A - Secundaria",
-      cuota_base: "0.00",
-      deportes: "0.00",
-      transporte: "0.00",
-      comedor: "0.00",
-      subtotal_deuda: "0.00",
-    },
-    {
-      alumno_legajo: 1350,
-      alumno_nombre: "Sofía Pérez",
-      alumno_curso: "1° Año B - Primaria",
-      cuota_base: "26000.00",
-      deportes: "6000.00",
-      transporte: "6000.00",
-      comedor: "0.00",
-      subtotal_deuda: "38000.00",
-    },
-  ],
-};

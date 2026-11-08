@@ -260,9 +260,36 @@ Historial de deuda acumulada para el padre/tutor.
 Listado de facturas emitidas por rango de fechas (`?desde=YYYY-MM-DD&hasta=YYYY-MM-DD`).
 - **Autenticación:** `Bearer <access_token>`.
 
-### `GET /api/reportes/ingresos/` (Administrador)
-Reporte institucional de ingresos por período (`?mes=11&anio=2026`).
-- **Autenticación:** `Bearer <access_token>` (Rol: `Administrador`).
+Todos los endpoints administrativos de este apartado requieren `Authorization: Bearer <access_token>` y el rol `Administrador`. El período se envía como `?mes=<1-12>&anio=<YYYY>`; si se omite, el backend usa el mes y año actuales. La consulta usa el período exacto y no mezcla cuotas de años distintos. Una lista vacía representa cero filas, nunca datos de ejemplo.
 
-### `GET /api/reportes/pagos-completos/` y `GET /api/reportes/pagos-incompletos/` (Administrador)
-Listados de alumnos/tutores al día y con saldo deudor en un período.
+### `GET /api/reportes/ingresos/`
+
+Devuelve el total facturado, cobrado, porcentaje de cobranza y cantidad de cuotas pagadas/pendientes. Incluye `ingresos_cuota_base`, `ingresos_servicios`, `ingresos_sin_desglose` y `cuotas_sin_desglose`.
+
+### `GET /api/reportes/pagos-completos/` y `GET /api/reportes/pagos-incompletos/`
+
+Listan cuotas saldadas y cuotas con saldo pendiente del período solicitado. Devuelven `[]` cuando no existen filas.
+
+### `GET /api/reportes/desglose-financiero/`
+
+Devuelve importes facturados y pagados aprobados, agrupados a partir de los conceptos guardados al emitir cada cuota. La distribución de un pago parcial entre conceptos se realiza proporcionalmente al importe de cada concepto.
+
+```json
+{
+  "mes": 11,
+  "anio": 2026,
+  "deportes": [{"nombre": "Natación", "facturado": "5000.00", "pagado": "2500.00"}],
+  "niveles": [],
+  "horarios": [],
+  "docentes": [],
+  "recorridos": [],
+  "cuotas_sin_desglose": 2,
+  "facturado_sin_desglose": "50000.00",
+  "pagado_sin_desglose": "10000.00"
+}
+```
+
+Las categorías `niveles`, `horarios`, `docentes` y `recorridos` tienen la misma forma `{ "nombre", "facturado", "pagado" }`. Las cuotas históricas anteriores al guardado del desglose se contabilizan como `sin_desglose`; no se reconstruyen usando las inscripciones actuales, porque podrían haber cambiado.
+
+Si falla una solicitud, la app debe mostrar el error de conexión/servidor y no reemplazarlo con cifras de ejemplo. Una respuesta correcta con arreglos vacíos debe mostrar un estado sin movimientos.
+

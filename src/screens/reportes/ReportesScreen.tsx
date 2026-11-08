@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -19,10 +19,15 @@ import {
   PagoIncompletoModel,
   FacturaReporteModel,
   DeudaDiscriminadaModel,
+  ReporteDesgloseFinancieroModel,
 } from "../../types/reportes";
 
 type AdminTab = "al_dia" | "morosos";
 type TutorTab = "facturas" | "deuda";
+const MESES = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+];
 
 export function ReportesScreen() {
   const { user } = useAuth();
@@ -33,6 +38,9 @@ export function ReportesScreen() {
   const [reporteIngresos, setReporteIngresos] = useState<ReporteIngresosModel | null>(null);
   const [pagosCompletos, setPagosCompletos] = useState<PagoCompletoModel[]>([]);
   const [pagosIncompletos, setPagosIncompletos] = useState<PagoIncompletoModel[]>([]);
+  const [desgloseFinanciero, setDesgloseFinanciero] = useState<ReporteDesgloseFinancieroModel | null>(null);
+  const [mesAdmin, setMesAdmin] = useState(() => new Date().getMonth() + 1);
+  const [anioAdmin, setAnioAdmin] = useState(() => new Date().getFullYear());
 
   // Estados de Tutor (HU_M08 y HU_M09)
   const [tutorTab, setTutorTab] = useState<TutorTab>("facturas");
@@ -43,89 +51,71 @@ export function ReportesScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const latestRequestId = useRef(0);
 
-  async function loadData() {
+  const loadData = useCallback(async (mes: number, anio: number) => {
+    const requestId = ++latestRequestId.current;
     try {
       setError(null);
+      setReporteIngresos(null);
+      setPagosCompletos([]);
+      setPagosIncompletos([]);
+      setDesgloseFinanciero(null);
+      setFacturas([]);
+      setDeudaDiscriminada(null);
       if (isAdmin) {
-        const [ingresos, completos, incompletos] = await Promise.all([
-          reportesService.getReporteIngresos(11, 2026),
-          reportesService.getPagosCompletos(11, 2026),
-          reportesService.getPagosIncompletos(11, 2026),
+        const [ingresos, completos, incompletos, desglose] = await Promise.all([
+          reportesService.getReporteIngresos(mes, anio),
+          reportesService.getPagosCompletos(mes, anio),
+          reportesService.getPagosIncompletos(mes, anio),
+          reportesService.getDesgloseFinanciero(mes, anio),
         ]);
+        if (requestId !== latestRequestId.current) return;
         setReporteIngresos(ingresos);
         setPagosCompletos(completos);
         setPagosIncompletos(incompletos);
+        setDesgloseFinanciero(desglose);
       } else {
         const [facturasList, deuda] = await Promise.all([
           reportesService.getFacturasTutor(),
           reportesService.getDeudaDiscriminada(),
         ]);
+        if (requestId !== latestRequestId.current) return;
         setFacturas(facturasList);
         setDeudaDiscriminada(deuda);
       }
     } catch (err: any) {
-      setError(
-        err.response?.data?.detail ||
-          "No se pudieron sincronizar los reportes. Verifique su conexión."
-      );
+      if (requestId === latestRequestId.current) {
+        setError(
+          err.response?.data?.detail ||
+            "No se pudieron sincronizar los reportes. Verifique su conexión."
+        );
+      }
     } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function init() {
-      try {
-        if (isAdmin) {
-          const [ingresos, completos, incompletos] = await Promise.all([
-            reportesService.getReporteIngresos(11, 2026),
-            reportesService.getPagosCompletos(11, 2026),
-            reportesService.getPagosIncompletos(11, 2026),
-          ]);
-          if (isMounted) {
-            setReporteIngresos(ingresos);
-            setPagosCompletos(completos);
-            setPagosIncompletos(incompletos);
-            setError(null);
-          }
-        } else {
-          const [facturasList, deuda] = await Promise.all([
-            reportesService.getFacturasTutor(),
-            reportesService.getDeudaDiscriminada(),
-          ]);
-          if (isMounted) {
-            setFacturas(facturasList);
-            setDeudaDiscriminada(deuda);
-            setError(null);
-          }
-        }
-      } catch (err: any) {
-        if (isMounted) {
-          setError(
-            err.response?.data?.detail ||
-              "No se pudieron cargar los reportes. Verifique su conexión."
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+      if (requestId === latestRequestId.current) {
+        setLoading(false);
+        setRefreshing(false);
       }
     }
-
-    void init();
-    return () => {
-      isMounted = false;
-    };
   }, [isAdmin]);
+
+  useEffect(() => {
+    const request = setTimeout(() => {
+      void loadData(mesAdmin, anioAdmin);
+    }, 0);
+    return () => clearTimeout(request);
+  }, [isAdmin, mesAdmin, anioAdmin, loadData]);
 
   function onRefresh() {
     setRefreshing(true);
-    void loadData();
+    void loadData(mesAdmin, anioAdmin);
+  }
+
+  function cambiarPeriodoAdmin(desplazamiento: number) {
+    const siguiente = new Date(anioAdmin, mesAdmin - 1 + desplazamiento, 1);
+    setLoading(true);
+    setMesAdmin(siguiente.getMonth() + 1);
+    setAnioAdmin(siguiente.getFullYear());
   }
 
   function handleContactarTutor(item: PagoIncompletoModel) {
@@ -159,6 +149,33 @@ export function ReportesScreen() {
         </Text>
       </View>
 
+      {isAdmin && (
+        <View style={styles.periodSelector}>
+          <Text style={styles.periodSelectorLabel}>Período del reporte</Text>
+          <View style={styles.periodSelectorControls}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Mes anterior"
+              style={styles.periodSelectorButton}
+              onPress={() => cambiarPeriodoAdmin(-1)}
+            >
+              <Text style={styles.periodSelectorButtonText}>‹</Text>
+            </TouchableOpacity>
+            <Text style={styles.periodSelectorValue}>
+              {MESES[mesAdmin - 1]} {anioAdmin}
+            </Text>
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Mes siguiente"
+              style={styles.periodSelectorButton}
+              onPress={() => cambiarPeriodoAdmin(1)}
+            >
+              <Text style={styles.periodSelectorButtonText}>›</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
       {error && <ErrorMessage message={error} />}
 
       {/* ========================================================================= */}
@@ -181,7 +198,7 @@ export function ReportesScreen() {
 
               <View style={styles.kpiRow}>
                 <View>
-                  <Text style={styles.kpiLabel}>Total Recaudado Efectivo</Text>
+                    <Text style={styles.kpiLabel}>Total Recaudado</Text>
                   <Text style={styles.kpiAmountSuccess}>
                     {reporteIngresos.totalRecaudadoFormateado}
                   </Text>
@@ -214,6 +231,44 @@ export function ReportesScreen() {
                   ⚽ Servicios: {reporteIngresos.ingresosServiciosFormateado}
                 </Text>
               </View>
+              {reporteIngresos.cuotasSinDesglose > 0 && (
+                <Text style={styles.unclassifiedNote}>
+                  {reporteIngresos.cuotasSinDesglose} cuota(s) histórica(s), con {reporteIngresos.ingresosSinDesgloseFormateado} cobrado, no tienen desglose guardado.
+                </Text>
+              )}
+            </Card>
+          )}
+
+          {desgloseFinanciero && (
+            <Card style={styles.breakdownCard}>
+              <Text style={styles.breakdownTitle}>Facturado y pagado por categoría</Text>
+              {[
+                { titulo: "Deportes", filas: desgloseFinanciero.deportes },
+                { titulo: "Nivel educativo", filas: desgloseFinanciero.niveles },
+                { titulo: "Horario", filas: desgloseFinanciero.horarios },
+                { titulo: "Docente", filas: desgloseFinanciero.docentes },
+                { titulo: "Recorrido", filas: desgloseFinanciero.recorridos },
+              ].map((grupo) => (
+                <View key={grupo.titulo} style={styles.breakdownSection}>
+                  <Text style={styles.breakdownSectionTitle}>{grupo.titulo}</Text>
+                  {grupo.filas.length > 0 ? grupo.filas.map((fila) => (
+                    <View key={`${grupo.titulo}-${fila.nombre}`} style={styles.breakdownRow}>
+                      <Text style={styles.breakdownName}>{fila.nombre}</Text>
+                      <View style={styles.breakdownAmounts}>
+                        <Text style={styles.breakdownAmount}>Facturado {fila.facturadoFormateado}</Text>
+                        <Text style={styles.breakdownPaid}>Pagado {fila.pagadoFormateado}</Text>
+                      </View>
+                    </View>
+                  )) : (
+                    <Text style={styles.breakdownEmpty}>Sin movimientos con desglose en este período.</Text>
+                  )}
+                </View>
+              ))}
+              {desgloseFinanciero.cuotasSinDesglose > 0 && (
+                <Text style={styles.unclassifiedNote}>
+                  {desgloseFinanciero.cuotasSinDesglose} cuota(s) no tienen desglose histórico; no se atribuyeron a categorías.
+                </Text>
+              )}
             </Card>
           )}
 
@@ -257,6 +312,9 @@ export function ReportesScreen() {
           {/* Listado Admin: Morosos */}
           {adminTab === "morosos" ? (
             <View>
+              {!error && pagosIncompletos.length === 0 && (
+                <Text style={styles.emptyState}>No hay pagos incompletos en este período.</Text>
+              )}
               {pagosIncompletos.map((item) => (
                 <Card key={item.id} style={styles.deudorCard}>
                   <View style={styles.cardHeaderRow}>
@@ -294,6 +352,9 @@ export function ReportesScreen() {
           ) : (
             /* Listado Admin: Al Día */
             <View>
+              {!error && pagosCompletos.length === 0 && (
+                <Text style={styles.emptyState}>No hay pagos completos en este período.</Text>
+              )}
               {pagosCompletos.map((item) => (
                 <Card key={item.id} style={styles.alDiaCard}>
                   <View style={styles.cardHeaderRow}>
@@ -564,6 +625,109 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#64748B",
     marginTop: 2,
+  },
+  periodSelector: {
+    marginHorizontal: 0,
+    marginTop: 12,
+    marginBottom: 4,
+    padding: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  periodSelectorLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#64748B",
+    marginBottom: 6,
+  },
+  periodSelectorControls: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  periodSelectorButton: {
+    width: 40,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    backgroundColor: "#EFF6FF",
+  },
+  periodSelectorButtonText: {
+    fontSize: 24,
+    lineHeight: 28,
+    color: "#1E3A8A",
+    fontWeight: "700",
+  },
+  periodSelectorValue: {
+    fontSize: 16,
+    color: "#1E3A8A",
+    fontWeight: "700",
+  },
+  emptyState: {
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    textAlign: "center",
+    color: "#64748B",
+    fontSize: 14,
+  },
+  breakdownCard: {
+    marginBottom: 16,
+    padding: 16,
+  },
+  breakdownTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1E3A8A",
+    marginBottom: 10,
+  },
+  breakdownSection: {
+    marginTop: 8,
+  },
+  breakdownSectionTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#334155",
+    marginBottom: 4,
+  },
+  breakdownRow: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E2E8F0",
+  },
+  breakdownName: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#0F172A",
+  },
+  breakdownAmounts: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 3,
+  },
+  breakdownAmount: {
+    fontSize: 12,
+    color: "#64748B",
+  },
+  breakdownPaid: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#15803D",
+  },
+  breakdownEmpty: {
+    fontSize: 12,
+    color: "#64748B",
+    paddingVertical: 4,
+  },
+  unclassifiedNote: {
+    fontSize: 12,
+    color: "#92400E",
+    backgroundColor: "#FEF3C7",
+    borderRadius: 8,
+    padding: 9,
+    marginTop: 10,
   },
   kpiCard: {
     backgroundColor: "#EFF6FF",
@@ -958,3 +1122,4 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
+
