@@ -8,12 +8,14 @@ export const comprobantesService = {
   async upload(input: {
     cuotaId: number;
     importe: number;
+    conceptosSeleccionados: string[];
     medioPago?: string;
     archivo: ComprobanteUploadFile;
   }): Promise<ComprobanteUploadResponse> {
     const formData = new FormData();
     formData.append("cuota_id", String(input.cuotaId));
     formData.append("importe", input.importe.toFixed(2));
+    formData.append("conceptos_seleccionados", JSON.stringify(input.conceptosSeleccionados));
     formData.append("medio_pago", input.medioPago || "Transferencia");
     formData.append(
       "archivo",

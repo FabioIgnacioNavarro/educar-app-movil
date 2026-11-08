@@ -40,6 +40,8 @@ export const cuotasService = {
       estado: cuota.estado,
       alumno: cuota.alumno,
       factura_id: cuota.factura_id,
+      conceptos_pago: cuota.conceptos_pago || [],
+      discriminacion: cuota.discriminacion,
       comprobantes: cuota.comprobantes || [],
     });
   },
