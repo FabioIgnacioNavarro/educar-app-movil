@@ -153,6 +153,24 @@ export function adaptDetalleCuota(
     : null;
 
   const comprobantes = (dto.comprobantes || []).map(adaptComprobante);
+  const conceptosPago = (dto.conceptos_pago || []).map((concepto) => {
+    const monto = Number(concepto.monto || 0);
+    const montoPagado = Number(concepto.monto_pagado || 0);
+    const montoEnRevision = Number(concepto.monto_en_revision || 0);
+    const saldoDisponible = Number(concepto.saldo_disponible || 0);
+    return {
+      clave: concepto.clave,
+      tipo: concepto.tipo,
+      concepto: concepto.concepto,
+      monto,
+      montoFormateado: formatCurrency(monto),
+      montoPagado,
+      montoEnRevision,
+      saldoDisponible,
+      saldoDisponibleFormateado: formatCurrency(saldoDisponible),
+      bloqueadoPorRevision: Boolean(concepto.bloqueado_por_revision),
+    };
+  });
 
   const totalComprobantesAprobados = comprobantes
     .filter((c) => c.estado === "pagado")
@@ -191,6 +209,7 @@ export function adaptDetalleCuota(
     alumnoLegajo: dto.alumno?.legajo || fallbackBase?.alumnoLegajo || 0,
     alumnoCurso: dto.alumno?.curso || fallbackBase?.alumnoCurso || "Curso no especificado",
     facturaId: dto.factura_id || fallbackBase?.facturaId,
+    conceptosPago,
     discriminacion: dto.discriminacion
       ? {
           cuotaBase: cuotaBaseMonto,

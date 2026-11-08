@@ -22,7 +22,9 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) (#18) | Media | `terminado` | Navarro / Echeverría | Tarea día 20, solo a tutores con deuda, exclusión comprobantes en revisión (PR #31 backend fusionada) |
 | **HU_M08** | Sprint 3 | Consultar reportes de facturas por período (Tutor) (#19) | Media | `terminado` | Navarro | Filtro de fechas, listado de comprobantes asociados |
 | **HU_M09** | Sprint 3 | Consultar historial de deuda discriminado (Tutor) (#20) | Media | `terminado` | Navarro | Desglose por concepto (cuota, deporte, transporte, comedor) |
-| **HU_M10** | Sprint 3 | Consultar reportes administrativos móviles (Admin) (#21, #26, #27, PR #28) | Alta | `en progreso` | Navarro / Echeverría | Período seleccionable y estados reales sin fallback (PR #28 borrador); desglose por deporte, nivel, horario, docente y recorrido PR backend #40 abierto; requiere merge, migración y despliegue |
+| **HU_M10** | Sprint 3 | Consultar reportes administrativos móviles (Admin) (#21, #26, #27, PR #22, PR #28) | Alta | `terminado` | Navarro / Echeverría | Reportes base, período seleccionable, datos reales y desglose financiero por deporte, nivel, horario, docente y recorrido (backend PR #40 fusionado) |
+| **HU_M11** | Extensión pagos | Pagar conceptos seleccionados de una cuota (#29, backend PR #41, app PR #31) | Alta | `terminado` | Navarro / Echeverría | El tutor selecciona conceptos completos; API persiste asignación y saldo por concepto |
+| **HU_M12** | Extensión pagos | Recibir correo al aprobar un pago (#30, backend PR #41) | Media | `terminado` | Echeverría | Correo idempotente al tutor con importe aprobado y saldo restante |
 | **CHORE-07** | Sprint 3 | Pruebas integrales en emulador y dispositivo real (#23) | Alta | `pendiente` | Navarro / Echeverría | Verificación E2E de flujos móvil + backend en sesión presencial |
 | **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `pendiente` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK instalable descargable |
 | **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
@@ -88,8 +90,11 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **TEST-02:** Pruebas de ejecución de comandos, despacho de emails simulados y contratos de reportes (20 tests en verde).
 - [x] **HU_M08:** Reporte de facturas y comprobantes por rango de fechas (Tutor) (#19, PR #22).
 - [x] **HU_M09:** Historial de deuda discriminado por ítems (Tutor) (#20, PR #22).
-- [ ] **HU_M10 (#26):** Período dinámico y datos reales sin fallbacks (PR móvil #28 en borrador).
-- [ ] **HU_M10 (#27):** Desglose por deporte, nivel, horario, docente y recorrido desde snapshots de cuota (PRs backend y móvil pendientes; migración 0018).
+- [x] **HU_M10 (#21):** Reportes administrativos móviles (ingresos, recaudación, estados de deuda) (PR #22).
+- [x] **HU_M10 (#26):** Período dinámico y datos reales sin fallbacks (PR móvil #28).
+- [x] **HU_M10 (#27):** Desglose financiero por deporte, nivel, horario, docente y recorrido desde snapshots (backend PR #40, migración 0018; app PR móvil #28).
+- [x] **HU_M11 (#29):** Selección de conceptos completos al pagar; backend PR #41 y app PR #31 fusionados.
+- [x] **HU_M12 (#30):** Correo al tutor tras la aprobación administrativa, con importe y saldo restante; backend PR #41 fusionado.
 - [ ] **CHORE-07:** Pruebas integrales en emulador Android y dispositivo físico real (#23, asignado a sesión presencial Navarro / Echeverría).
 - [ ] **CHORE-08:** Compilación de APK de producción mediante EAS Build (`eas build -p android`) (#24, asignado a sesión presencial Navarro / Echeverría).
 - [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra (#25).

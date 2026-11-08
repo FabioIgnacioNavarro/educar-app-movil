@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   Alert,
   ScrollView,
   Image,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { isAxiosError } from "axios";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -20,6 +20,8 @@ import { ComprobanteUploadFile } from "../../types/comprobantes";
 import { comprobantesService } from "../../services/comprobantesService";
 import { MainTabParamList } from "../../types/navigation";
 import { formatCurrency } from "../../utils/formatters";
+import { cuotasService } from "../../services/cuotasService";
+import type { DetalleCuotaModel } from "../../types/cuota";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
@@ -32,9 +34,51 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
   const alumnoNombre: string | undefined = route.params?.alumnoNombre;
   const saldo: number | undefined = route.params?.saldo;
   const [archivo, setArchivo] = useState<ComprobanteUploadFile | null>(null);
-  const [importe, setImporte] = useState(saldo ? String(saldo) : "");
+  const [detalle, setDetalle] = useState<DetalleCuotaModel | null>(null);
+  const [conceptosSeleccionados, setConceptosSeleccionados] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const detalleActual = detalle?.id === cuotaId ? detalle : null;
+  const cargandoDetalle = Boolean(cuotaId && !detalleActual && !error);
+  const conceptosPago = useMemo(
+    () => detalleActual?.conceptosPago ?? [],
+    [detalleActual]
+  );
+  const importeSeleccionado = useMemo(
+    () => conceptosPago
+      .filter((concepto) => conceptosSeleccionados.includes(concepto.clave))
+      .reduce((total, concepto) => total + Math.round(concepto.saldoDisponible * 100), 0) / 100,
+    [conceptosPago, conceptosSeleccionados]
+  );
+
+  useEffect(() => {
+    if (!cuotaId) {
+      return;
+    }
+    let activo = true;
+    Promise.resolve()
+      .then(() => {
+        if (!activo) return null;
+        setError(null);
+        return cuotasService.getCuotaById(cuotaId);
+      })
+      .then((data) => {
+        if (activo && data) {
+          setDetalle(data);
+          setConceptosSeleccionados([]);
+        }
+      })
+      .catch(() => {
+        if (activo) setError("No se pudo cargar el desglose de la cuota. Volvé a Cuotas y actualizá el listado.");
+      });
+    return () => { activo = false; };
+  }, [cuotaId]);
+
+  function alternarConcepto(clave: string) {
+    setConceptosSeleccionados((actuales) => actuales.includes(clave)
+      ? actuales.filter((actual) => actual !== clave)
+      : [...actuales, clave]);
+  }
 
   function aceptarArchivo(file: ComprobanteUploadFile) {
     const normalizedType = file.type.toLowerCase();
@@ -120,7 +164,6 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
 
   async function enviarComprobante() {
     setError(null);
-    const numericImporte = Number(importe.trim().replace(",", "."));
     if (!cuotaId) {
       setError("Volvé a Cuotas y seleccioná la cuota a pagar.");
       return;
@@ -129,12 +172,13 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
       setError("Seleccioná el comprobante de pago antes de enviarlo.");
       return;
     }
-    if (!Number.isFinite(numericImporte) || numericImporte <= 0) {
-      setError("Ingresá un importe válido mayor que cero.");
+    if (conceptosSeleccionados.length === 0 || importeSeleccionado <= 0) {
+      setError("Seleccioná al menos un concepto con saldo pendiente.");
       return;
     }
-    if (saldo !== undefined && numericImporte > saldo) {
-      setError(`El importe no puede superar el saldo de ${formatCurrency(saldo)}.`);
+    const saldoCuota = detalleActual?.saldoPendiente ?? saldo;
+    if (saldoCuota !== undefined && importeSeleccionado > saldoCuota) {
+      setError(`La selección supera el saldo pendiente de ${formatCurrency(saldoCuota)}.`);
       return;
     }
 
@@ -142,14 +186,15 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
     try {
       const response = await comprobantesService.upload({
         cuotaId,
-        importe: numericImporte,
+        importe: importeSeleccionado,
+        conceptosSeleccionados,
         archivo,
       });
       Alert.alert("Comprobante enviado", response.mensaje, [
         { text: "Aceptar", onPress: () => navigation.navigate("Cuotas") },
       ]);
       setArchivo(null);
-      setImporte("");
+      setConceptosSeleccionados([]);
     } catch (err: unknown) {
       const detail = isAxiosError<{ detail?: string }>(err)
         ? err.response?.data?.detail
@@ -176,19 +221,69 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
             <Text style={styles.info}>
               {periodo ? `${periodo} · ` : ""}{alumnoNombre || "Cuota seleccionada"}
             </Text>
-            {saldo !== undefined && (
-              <Text style={styles.balance}>Saldo pendiente: {formatCurrency(saldo)}</Text>
+            {(detalleActual?.saldoPendiente ?? saldo) !== undefined && (
+              <Text style={styles.balance}>Saldo pendiente: {formatCurrency(detalleActual?.saldoPendiente ?? saldo ?? 0)}</Text>
             )}
 
-            <Text style={styles.label}>Importe transferido</Text>
-            <TextInput
-              accessibilityLabel="Importe transferido"
-              keyboardType="decimal-pad"
-              placeholder="Ej.: 15000,00"
-              value={importe}
-              onChangeText={setImporte}
-              style={styles.input}
-            />
+            <Text style={styles.label}>Elegí qué conceptos pagar</Text>
+            <Text style={styles.info}>
+              Cada concepto se paga por su saldo completo. Podés elegir uno o varios.
+            </Text>
+            {cargandoDetalle ? (
+              <View style={styles.progress}>
+                <ActivityIndicator color="#1E3A8A" />
+                <Text style={styles.progressText}>Cargando conceptos…</Text>
+              </View>
+            ) : conceptosPago.length === 0 ? (
+              <Text style={styles.emptyConcepts}>Esta cuota no tiene un desglose disponible para seleccionar.</Text>
+            ) : (
+              <View style={styles.conceptsList}>
+                {conceptosPago.map((concepto) => {
+                  const disponible = concepto.saldoDisponible > 0;
+                  const seleccionado = conceptosSeleccionados.includes(concepto.clave);
+                  const estadoConcepto = concepto.bloqueadoPorRevision
+                    ? "En revisión"
+                    : concepto.montoEnRevision > 0
+                      ? "En revisión"
+                      : disponible
+                        ? "Pendiente"
+                        : "Pagado";
+                  return (
+                    <TouchableOpacity
+                      key={concepto.clave}
+                      testID={`concepto-${concepto.clave}`}
+                      accessibilityRole="checkbox"
+                      accessibilityLabel={`${concepto.concepto}, ${formatCurrency(concepto.saldoDisponible)} disponible`}
+                      accessibilityState={{ checked: seleccionado, disabled: !disponible }}
+                      disabled={!disponible}
+                      onPress={() => alternarConcepto(concepto.clave)}
+                      style={[
+                        styles.conceptRow,
+                        seleccionado && styles.conceptRowSelected,
+                        !disponible && styles.conceptRowDisabled,
+                      ]}
+                    >
+                      <View style={[styles.checkbox, seleccionado && styles.checkboxSelected]}>
+                        {seleccionado && <Text style={styles.checkmark}>✓</Text>}
+                      </View>
+                      <View style={styles.conceptText}>
+                        <Text style={styles.conceptName}>{concepto.concepto}</Text>
+                        <Text style={styles.conceptStatus}>{estadoConcepto}</Text>
+                      </View>
+                      <Text style={styles.conceptAmount}>
+                        {formatCurrency(concepto.saldoDisponible)}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            )}
+            <View style={styles.selectedTotal}>
+              <Text style={styles.selectedTotalLabel}>Total seleccionado</Text>
+              <Text testID="total-conceptos-seleccionados" style={styles.selectedTotalAmount}>
+                {formatCurrency(importeSeleccionado)}
+              </Text>
+            </View>
 
             <Text style={styles.label}>Comprobante</Text>
             <Button
@@ -238,7 +333,7 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
               title="Enviar comprobante"
               onPress={() => void enviarComprobante()}
               loading={submitting}
-              disabled={!archivo}
+              disabled={!archivo || !detalleActual || cargandoDetalle || !conceptosSeleccionados.length || importeSeleccionado <= 0}
               style={styles.submitButton}
             />
             {submitting && (
@@ -294,10 +389,30 @@ const styles = StyleSheet.create({
   info: { fontSize: 14, color: "#475569", marginBottom: 12, lineHeight: 20 },
   balance: { fontSize: 15, color: "#1E3A8A", fontWeight: "700", marginBottom: 18 },
   label: { fontSize: 13, fontWeight: "600", color: "#334155", marginBottom: 6, marginTop: 8 },
-  input: {
-    borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 8, paddingHorizontal: 12,
-    paddingVertical: 11, backgroundColor: "#FFFFFF", color: "#0F172A", fontSize: 15,
+  conceptsList: { gap: 9, marginBottom: 8 },
+  conceptRow: {
+    flexDirection: "row", alignItems: "center", padding: 12, gap: 10,
+    borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 10, backgroundColor: "#FFFFFF",
   },
+  conceptRowSelected: { borderColor: "#1E3A8A", backgroundColor: "#EFF6FF" },
+  conceptRowDisabled: { backgroundColor: "#F1F5F9", opacity: 0.75 },
+  checkbox: {
+    width: 22, height: 22, borderWidth: 1, borderColor: "#94A3B8", borderRadius: 5,
+    alignItems: "center", justifyContent: "center",
+  },
+  checkboxSelected: { backgroundColor: "#1E3A8A", borderColor: "#1E3A8A" },
+  checkmark: { color: "#FFFFFF", fontWeight: "800", fontSize: 14, lineHeight: 18 },
+  conceptText: { flex: 1 },
+  conceptName: { color: "#1E293B", fontSize: 14, fontWeight: "700" },
+  conceptStatus: { color: "#64748B", fontSize: 12, marginTop: 3 },
+  conceptAmount: { color: "#0F172A", fontSize: 14, fontWeight: "700" },
+  selectedTotal: {
+    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+    paddingVertical: 12, marginBottom: 6, borderTopWidth: 1, borderColor: "#E2E8F0",
+  },
+  selectedTotalLabel: { color: "#334155", fontSize: 14, fontWeight: "700" },
+  selectedTotalAmount: { color: "#1E3A8A", fontSize: 16, fontWeight: "800" },
+  emptyConcepts: { color: "#92400E", backgroundColor: "#FEF3C7", padding: 12, borderRadius: 8, fontSize: 13 },
   button: { marginTop: 9 },
   preview: {
     alignItems: "center", backgroundColor: "#F1F5F9", borderColor: "#CBD5E1",
