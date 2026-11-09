@@ -177,6 +177,15 @@ export function PerfilScreen() {
           </View>
         )}
       </Card>
+
+      <View style={styles.brandFooter}>
+        <View style={styles.brandFooterRow}>
+          <Text style={styles.brandFooterEducar}>Educar </Text>
+          <Text style={styles.brandFooterPara}>para </Text>
+          <Text style={styles.brandFooterTransformar}>Transformar</Text>
+        </View>
+        <Text style={styles.brandFooterSub}>Centro Educativo • Plataforma Móvil</Text>
+      </View>
     </ScrollView>
   );
 }
@@ -285,5 +294,36 @@ const styles = StyleSheet.create({
   },
   passwordAction: {
     marginBottom: 10,
+  },
+  brandFooter: {
+    alignItems: "center",
+    marginTop: 28,
+    marginBottom: 16,
+  },
+  brandFooterRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "center",
+  },
+  brandFooterEducar: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#1D66C2",
+  },
+  brandFooterPara: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  brandFooterTransformar: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#EC058F",
+  },
+  brandFooterSub: {
+    fontSize: 12,
+    color: "#94A3B8",
+    fontWeight: "500",
+    marginTop: 3,
   },
 });
