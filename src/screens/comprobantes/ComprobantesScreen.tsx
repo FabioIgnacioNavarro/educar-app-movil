@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -51,28 +52,32 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
     [conceptosPago, conceptosSeleccionados]
   );
 
-  useEffect(() => {
-    if (!cuotaId) {
-      return;
-    }
-    let activo = true;
-    Promise.resolve()
-      .then(() => {
-        if (!activo) return null;
-        setError(null);
-        return cuotasService.getCuotaById(cuotaId);
-      })
-      .then((data) => {
-        if (activo && data) {
-          setDetalle(data);
-          setConceptosSeleccionados([]);
-        }
-      })
-      .catch(() => {
-        if (activo) setError("No se pudo cargar el desglose de la cuota. Volvé a Cuotas y actualizá el listado.");
-      });
-    return () => { activo = false; };
-  }, [cuotaId]);
+  useFocusEffect(
+    useCallback(() => {
+      if (!cuotaId) return undefined;
+
+      let activo = true;
+      setDetalle(null);
+      setConceptosSeleccionados([]);
+      setError(null);
+
+      void cuotasService.getCuotaById(cuotaId)
+        .then((data) => {
+          if (activo && data) {
+            setDetalle(data);
+          }
+        })
+        .catch(() => {
+          if (activo) {
+            setError("No se pudo cargar el desglose de la cuota. Volvé a Cuotas y actualizá el listado.");
+          }
+        });
+
+      return () => {
+        activo = false;
+      };
+    }, [cuotaId])
+  );
 
   function alternarConcepto(clave: string) {
     setConceptosSeleccionados((actuales) => actuales.includes(clave)
