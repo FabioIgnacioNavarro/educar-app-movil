@@ -60,7 +60,11 @@ Permite que un usuario móvil autenticado cambie su contraseña desde **Mi Perfi
 - **Errores:** `400` si la actual es incorrecta o la nueva no cumple los validadores del proyecto; `401` si la sesión venció.
 - **Seguridad:** se revocan las demás sesiones móviles; la sesión actual continúa activa. Máximo cinco intentos por hora.
 
-La recuperación de una contraseña olvidada por correo todavía no está implementada; esta entrega cubre el cambio de contraseña para usuarios que pueden iniciar sesión.
+### `POST /api/auth/password-reset/request/`
+Endpoint público para solicitar un código al correo guardado en la cuenta. Request: `{"email":"persona@correo.com"}`. Devuelve siempre un mensaje genérico para no revelar si la cuenta existe. Si el correo corresponde a una cuenta móvil activa, se envía un código de seis dígitos que vence en 15 minutos. Límite: cinco solicitudes por hora.
+
+### `POST /api/auth/password-reset/confirm/`
+Endpoint público. Request: `{"email":"persona@correo.com","code":"123456","new_password":"..."}`. Valida el código de un solo uso, vencimiento y validadores de contraseña del backend. Permite hasta cinco códigos incorrectos y limita a diez solicitudes por hora. Al confirmar, cambia la contraseña y revoca todas las sesiones; la persona debe iniciar sesión con la nueva contraseña.
 
 ---
 ## 2. Módulo Cuotas e Historial Financiero

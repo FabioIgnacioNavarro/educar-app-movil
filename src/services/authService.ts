@@ -39,6 +39,30 @@ export const authService = {
     return response.data;
   },
 
+  async requestPasswordReset(email: string): Promise<{ detail: string }> {
+    const response = await apiClient.post<{ detail: string }>(
+      "/auth/password-reset/request/",
+      { email }
+    );
+    return response.data;
+  },
+
+  async confirmPasswordReset(input: {
+    email: string;
+    code: string;
+    newPassword: string;
+  }): Promise<{ detail: string }> {
+    const response = await apiClient.post<{ detail: string }>(
+      "/auth/password-reset/confirm/",
+      {
+        email: input.email,
+        code: input.code,
+        new_password: input.newPassword,
+      }
+    );
+    return response.data;
+  },
+
   async logout() {
     try {
       await apiClient.post("/auth/logout/");
