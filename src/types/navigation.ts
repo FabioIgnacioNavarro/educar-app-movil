@@ -17,6 +17,8 @@ export type MainTabParamList = {
         periodo?: string;
         alumnoNombre?: string;
         saldo?: number;
+        /** Cambia cada vez que se abre el formulario para forzar una consulta nueva. */
+        refreshKey?: number;
       }
     | undefined;
   Servicios: undefined;

@@ -133,6 +133,7 @@ export function CuotasScreen({ navigation }: CuotasScreenProps) {
       saldo,
       periodo: cuota?.periodo,
       alumnoNombre: cuota?.alumnoNombre,
+      refreshKey: Date.now(),
     });
   }
 

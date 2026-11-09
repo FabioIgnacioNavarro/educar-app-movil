@@ -34,12 +34,16 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
   const periodo: string | undefined = route.params?.periodo;
   const alumnoNombre: string | undefined = route.params?.alumnoNombre;
   const saldo: number | undefined = route.params?.saldo;
+  const refreshKey: number | undefined = route.params?.refreshKey;
   const [archivo, setArchivo] = useState<ComprobanteUploadFile | null>(null);
   const [detalle, setDetalle] = useState<DetalleCuotaModel | null>(null);
+  const [detalleRefreshKey, setDetalleRefreshKey] = useState<number | undefined>();
   const [conceptosSeleccionados, setConceptosSeleccionados] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const detalleActual = detalle?.id === cuotaId ? detalle : null;
+  const detalleActual = detalle?.id === cuotaId && detalleRefreshKey === refreshKey
+    ? detalle
+    : null;
   const cargandoDetalle = Boolean(cuotaId && !detalleActual && !error);
   const conceptosPago = useMemo(
     () => detalleActual?.conceptosPago ?? [],
@@ -65,6 +69,7 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
         .then((data) => {
           if (activo && data) {
             setDetalle(data);
+            setDetalleRefreshKey(refreshKey);
           }
         })
         .catch(() => {
@@ -76,7 +81,7 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
       return () => {
         activo = false;
       };
-    }, [cuotaId])
+    }, [cuotaId, refreshKey])
   );
 
   function alternarConcepto(clave: string) {
