@@ -25,6 +25,20 @@ export const authService = {
     return user;
   },
 
+  async changePassword(input: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<{ detail: string }> {
+    const response = await apiClient.post<{ detail: string }>(
+      "/auth/password-change/",
+      {
+        current_password: input.currentPassword,
+        new_password: input.newPassword,
+      }
+    );
+    return response.data;
+  },
+
   async logout() {
     try {
       await apiClient.post("/auth/logout/");

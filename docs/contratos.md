@@ -52,8 +52,15 @@ Revoca en el servidor la sesión asociada al token.
 
 La API entrega un token de acceso con duración de 8 horas y no entrega token `refresh`. La app guarda el acceso en SecureStore, valida la sesión con `/auth/me/` al abrirse y llama a `/auth/logout/` al salir.
 
-### Recuperación de contraseña
-`POST /api/auth/password-reset/` figura como necesidad futura, pero todavía no está implementado en el backend.
+### `POST /api/auth/password-change/`
+Permite que un usuario móvil autenticado cambie su contraseña desde **Mi Perfil**.
+- **Autenticación:** `Authorization: Bearer <access>`.
+- **Request Body:** `{"current_password":"...","new_password":"..."}`.
+- **Response `200 OK`:** `{"detail":"La contraseña se cambió correctamente."}`.
+- **Errores:** `400` si la actual es incorrecta o la nueva no cumple los validadores del proyecto; `401` si la sesión venció.
+- **Seguridad:** se revocan las demás sesiones móviles; la sesión actual continúa activa. Máximo cinco intentos por hora.
+
+La recuperación de una contraseña olvidada por correo todavía no está implementada; esta entrega cubre el cambio de contraseña para usuarios que pueden iniciar sesión.
 
 ---
 ## 2. Módulo Cuotas e Historial Financiero
