@@ -18,7 +18,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M04** | Sprint 2 | Cargar comprobante de transferencia (PDF/imagen) (#9, PR #12) | Alta | `terminado` | Echeverría | Envío multipart `{ uri, name, type }`, vinculación a cuota, validación y estados visibles con motivo de rechazo |
 | **HU_M05** | Sprint 2 | Consultar inscripciones a deportes, transporte y comedor (#10) | Media | `terminado` | Navarro | Límite máx. 2 deportes, recorrido asignado y valores vigentes |
 | **FIX-02** | Sprint 2 | No presentar aranceles no informados como gratuitos (#13) | Media | `terminado` | Echeverría | La app distingue precios nulos y no calcula un total falso |
-| **FIX-03** | Extensión pagos | Refrescar conceptos disponibles al volver a pagar (#32) | Alta | `en progreso` | Echeverría | Al regresar a la pantalla, mostrar saldo y estados actuales del backend; conceptos ya pagados quedan deshabilitados |
+| **FIX-03** | Extensión pagos | Refrescar conceptos disponibles al volver a pagar (#32, PR #33) | Alta | `terminado` | Echeverría | Al enfocar comprobantes y cada vez que se abre el formulario para una cuota, consultar el backend y mostrar saldo y estados actuales |
 | **HU_M06** | Sprint 3 | Recibir notificación de factura mensual emitida (#17) | Alta | `terminado` | Navarro / Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto (PR #31 backend fusionada) |
 | **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) (#18) | Media | `terminado` | Navarro / Echeverría | Tarea día 20, solo a tutores con deuda, exclusión comprobantes en revisión (PR #31 backend fusionada) |
 | **HU_M08** | Sprint 3 | Consultar reportes de facturas por período (Tutor) (#19) | Media | `terminado` | Navarro | Filtro de fechas, listado de comprobantes asociados |
@@ -65,7 +65,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M05:** Visualización del recorrido de transporte escolar y estado de comedor (#10).
 
 - [x] **FIX-02 (#13):** Representar aranceles ausentes como “No informado” y no calcular un total mensual falso.
-- [ ] **FIX-03 (#32):** Recargar el detalle financiero cuando la pantalla de comprobantes vuelve a enfocarse, reiniciando conceptos seleccionados para reflejar aprobaciones recientes.
+- [x] **FIX-03 (#32, PR #33):** Recargar el detalle al enfocar Comprobantes y cada vez que se abre el formulario de pago, incluso para la misma cuota; reiniciar selecciones y mostrar saldo y conceptos actualizados.
 
 #### 👤 Tareas Eje B (Maximiliano Echeverría - Backend DRF + Comprobantes):
 - [x] **BACKEND:** Endpoint `GET /api/cuotas/` con filtrado por rol Tutor en `educar_pagina` (`RNF_M04`).
