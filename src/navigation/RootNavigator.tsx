@@ -1,4 +1,5 @@
 import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,6 +27,16 @@ const AuthStack = createStackNavigator<AuthStackParamList>();
 const MainTabs = createBottomTabNavigator<MainTabParamList>();
 const AdminTabs = createBottomTabNavigator<AdminTabParamList>();
 
+function BrandHeaderTitle() {
+  return (
+    <View style={styles.brandHeaderContainer}>
+      <Text style={styles.brandHeaderEducar}>Educar </Text>
+      <Text style={styles.brandHeaderPara}>para </Text>
+      <Text style={styles.brandHeaderTransformar}>Transformar</Text>
+    </View>
+  );
+}
+
 function AuthNavigator() {
   return (
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
@@ -42,10 +53,18 @@ function MainTabNavigator() {
   return (
     <MainTabs.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: "#1E3A8A" },
-        headerTintColor: "#FFFFFF",
-        headerTitleStyle: { fontWeight: "bold" },
-        tabBarActiveTintColor: "#1E3A8A",
+        headerStyle: {
+          backgroundColor: "#FFFFFF",
+          borderBottomWidth: 1,
+          borderBottomColor: "#E2E8F0",
+          elevation: 2,
+          shadowColor: "#000",
+          shadowOpacity: 0.04,
+          shadowRadius: 3,
+        },
+        headerTitleAlign: "center",
+        headerTitle: () => <BrandHeaderTitle />,
+        tabBarActiveTintColor: "#1D66C2",
         tabBarInactiveTintColor: "#64748B",
         tabBarStyle: {
           height: barHeight,
@@ -143,10 +162,18 @@ function AdminTabNavigator() {
   return (
     <AdminTabs.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: "#1E3A8A" },
-        headerTintColor: "#FFFFFF",
-        headerTitleStyle: { fontWeight: "bold" },
-        tabBarActiveTintColor: "#1E3A8A",
+        headerStyle: {
+          backgroundColor: "#FFFFFF",
+          borderBottomWidth: 1,
+          borderBottomColor: "#E2E8F0",
+          elevation: 2,
+          shadowColor: "#000",
+          shadowOpacity: 0.04,
+          shadowRadius: 3,
+        },
+        headerTitleAlign: "center",
+        headerTitle: () => <BrandHeaderTitle />,
+        tabBarActiveTintColor: "#1D66C2",
         tabBarInactiveTintColor: "#64748B",
         tabBarStyle: {
           height: barHeight,
@@ -225,3 +252,28 @@ export function RootNavigator() {
 
   return <MainTabNavigator />;
 }
+
+const styles = StyleSheet.create({
+  brandHeaderContainer: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "center",
+  },
+  brandHeaderEducar: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#1D66C2", // Azul institucional
+    letterSpacing: 0.3,
+  },
+  brandHeaderPara: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  brandHeaderTransformar: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#EC058F", // Magenta institucional
+    letterSpacing: 0.3,
+  },
+});

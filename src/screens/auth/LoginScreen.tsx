@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../../components/Button";
@@ -117,8 +118,18 @@ export function LoginScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
+          <Image
+            source={require("../../../assets/logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+            accessibilityLabel="Logo institucional Educar para Transformar"
+          />
           <Text style={styles.institution}>CENTRO EDUCATIVO</Text>
-          <Text style={styles.title}>Transformar para educar</Text>
+          <View style={styles.brandTitleRow}>
+            <Text style={styles.brandEducar}>Educar </Text>
+            <Text style={styles.brandPara}>para </Text>
+            <Text style={styles.brandTransformar}>Transformar</Text>
+          </View>
           <Text style={styles.subtitle}>Gestión Móvil de Padres y Administración</Text>
         </View>
 
@@ -281,22 +292,42 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 24,
+  },
+  logo: {
+    width: 105,
+    height: 85,
+    marginBottom: 8,
   },
   institution: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "800",
     color: "#64748B",
-    letterSpacing: 1.5,
+    letterSpacing: 2,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#1E3A8A",
+  brandTitleRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "center",
     marginTop: 4,
   },
+  brandEducar: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: "#1D66C2",
+  },
+  brandPara: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  brandTransformar: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: "#EC058F",
+  },
   subtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#475569",
     marginTop: 4,
     textAlign: "center",
