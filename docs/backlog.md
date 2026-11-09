@@ -33,6 +33,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `pendiente` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK instalable descargable |
 | **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
 | **CHORE-09** | Sprint 3 | Identidad visual: logo institucional en login y cabecera de texto corporativa (#40, PR #39) | Media | en revisión | Navarro | Integración de logo.png en Login y navegación con texto de marca corporativo |
+| **HU_M04-ADMIN** | Extensión HU_M04 | Validación y gestión administrativa de comprobantes en la app (#41) | Alta | en progreso | Navarro | Endpoints admin y pantalla interactiva de comprobantes con aprobar/rechazar |
 
 ---
 
@@ -108,5 +109,6 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [ ] **CHORE-08:** Compilación de APK de producción mediante EAS Build (`eas build -p android`) (#24, asignado a sesión presencial Navarro / Echeverría).
 - [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra (#25).
 - [x] **CHORE-09 (#40, PR #39):** Identidad visual: incorporar logo institucional en login y cabecera de texto con colores de marca.
+- [ ] **HU_M04-ADMIN (#41):** Validación y gestión de comprobantes por el administrador en la app móvil.
 - **DoD Sprint 3:** 100% de las historias completadas. APK instalable generada y proyecto final entregado.
 
