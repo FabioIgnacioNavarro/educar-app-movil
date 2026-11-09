@@ -12,3 +12,34 @@ export interface ComprobanteUploadResponse {
   estado: "pendiente" | "en revisión" | "pagado" | "rechazado";
   mensaje: string;
 }
+
+export interface ComprobantePendienteModel {
+  id: number;
+  cuotaId: number | null;
+  periodo: string;
+  importe: number;
+  estado: string;
+  fechaSolicitud: string | null;
+  motivoRechazo: string | null;
+  alumno: {
+    legajo: number;
+    nombre: string;
+    curso: string;
+  };
+  tutor: {
+    id: number;
+    nombre: string;
+    email: string;
+  };
+  comprobante: {
+    id: number;
+    nombreArchivo: string;
+    archivoUrl: string;
+    fechaEnvio: string | null;
+  } | null;
+  conceptos: {
+    clave: string;
+    concepto: string;
+    monto: number;
+  }[];
+}

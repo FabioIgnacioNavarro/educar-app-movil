@@ -362,18 +362,7 @@ export function ComprobantesScreen({ route, navigation }: ComprobantesScreenProp
   );
 }
 
-export function AdminComprobantesScreen() {
-  return (
-    <View style={styles.container}>
-      <Card style={styles.card}>
-        <Text style={styles.cardTitle}>Revisión de comprobantes</Text>
-        <Text style={styles.info}>
-          La revisión y aprobación administrativa de pagos se realiza desde el panel web.
-        </Text>
-      </Card>
-    </View>
-  );
-}
+export { AdminComprobantesScreen } from "./AdminComprobantesScreen";
 
 function mimeFromName(name: string): string {
   const extension = name.toLowerCase().split(".").pop();

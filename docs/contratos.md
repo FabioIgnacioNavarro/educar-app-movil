@@ -224,7 +224,71 @@ cuando el estado es `rechazado`. La app muestra el estado y el motivo en la cuot
 
 ### `GET /api/comprobantes/{id}/archivo/`
 
-Descarga el archivo asociado a un comprobante usando el token Bearer. El backend vuelve a validar que el comprobante pertenezca a un alumno asociado al tutor; no se expone una URL pública.
+Descarga el archivo asociado a un comprobante usando el token Bearer. Admite tanto al padre/tutor asociado al alumno como al rol administrativo; no se expone una URL pública.
+
+### `GET /api/comprobantes/pendientes/`
+Exclusivo para el rol `administrativo`. Devuelve el listado de comprobantes y transferencias bancarias en estado `En revisión` o `Pendiente`.
+- **Autenticación:** `Bearer <access_token>` (rol administrativo).
+- **Response `200 OK`:**
+  ```json
+  [
+    {
+      "id": 42,
+      "cuota_id": 101,
+      "periodo": "Noviembre 2026",
+      "importe": "42000.00",
+      "estado": "En revisión",
+      "fecha_solicitud": "2026-11-09T18:30:00Z",
+      "motivo_rechazo": null,
+      "alumno": {
+        "legajo": 1245,
+        "nombre": "Mateo Pérez",
+        "curso": "3° Año A"
+      },
+      "tutor": {
+        "id": 147,
+        "nombre": "Juan López",
+        "email": "juan.lopez@example.com"
+      },
+      "comprobante": {
+        "id": 12,
+        "nombre_archivo": "transferencia.pdf",
+        "archivo_url": "/api/comprobantes/12/archivo/",
+        "fecha_envio": "2026-11-09T18:30:00Z"
+      },
+      "conceptos": [
+        { "clave": "cuota_base", "concepto": "Cuota Base", "monto": 25000.00 }
+      ]
+    }
+  ]
+  ```
+
+### `POST /api/comprobantes/{id_pago}/aprobar/`
+Exclusivo para el rol `administrativo`. Aprueba un pago en revisión, actualiza la cuota a `Pagada` o cancela los saldos correspondientes y despacha automáticamente el correo de confirmación con el recibo PDF adjunto.
+- **Autenticación:** `Bearer <access_token>` (rol administrativo).
+- **Response `200 OK`:**
+  ```json
+  {
+    "detail": "Pago aprobado con éxito.",
+    "pago_id": 42,
+    "estado": "Pagado",
+    "cuota_estado": "Pagada"
+  }
+  ```
+
+### `POST /api/comprobantes/{id_pago}/rechazar/`
+Exclusivo para el rol `administrativo`. Rechaza un pago en revisión registrando obligatoriamente el motivo para conocimiento del tutor.
+- **Autenticación:** `Bearer <access_token>` (rol administrativo).
+- **Request JSON:** `{"motivo": "El importe transferido es insuficiente o el comprobante es ilegible"}`
+- **Response `200 OK`:**
+  ```json
+  {
+    "detail": "Pago rechazado correctamente.",
+    "pago_id": 42,
+    "estado": "Rechazado",
+    "motivo_rechazo": "El importe transferido es insuficiente"
+  }
+  ```
 
 ---
 
