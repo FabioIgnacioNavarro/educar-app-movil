@@ -32,6 +32,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **CHORE-07** | Sprint 3 | Pruebas integrales en emulador y dispositivo real (#23) | Alta | `pendiente` | Navarro / Echeverría | Verificación E2E de flujos móvil + backend en sesión presencial |
 | **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `pendiente` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK instalable descargable |
 | **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
+| **CHORE-09** | Sprint 3 | Identidad visual: logo institucional en login y cabecera de texto corporativa (#40, PR #39) | Media | en revisión | Navarro | Integración de logo.png en Login y navegación con texto de marca corporativo |
 
 ---
 
@@ -106,5 +107,6 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [ ] **CHORE-07:** Pruebas integrales en emulador Android y dispositivo físico real (#23, asignado a sesión presencial Navarro / Echeverría).
 - [ ] **CHORE-08:** Compilación de APK de producción mediante EAS Build (`eas build -p android`) (#24, asignado a sesión presencial Navarro / Echeverría).
 - [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra (#25).
+- [x] **CHORE-09 (#40, PR #39):** Identidad visual: incorporar logo institucional en login y cabecera de texto con colores de marca.
 - **DoD Sprint 3:** 100% de las historias completadas. APK instalable generada y proyecto final entregado.
 
