@@ -2,6 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
@@ -34,6 +35,10 @@ function AuthNavigator() {
 }
 
 function MainTabNavigator() {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, 10);
+  const barHeight = 56 + bottomPadding;
+
   return (
     <MainTabs.Navigator
       screenOptions={{
@@ -43,12 +48,15 @@ function MainTabNavigator() {
         tabBarActiveTintColor: "#1E3A8A",
         tabBarInactiveTintColor: "#64748B",
         tabBarStyle: {
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 6,
+          height: barHeight,
+          paddingBottom: bottomPadding,
+          paddingTop: 8,
+          backgroundColor: "#FFFFFF",
+          borderTopWidth: 1,
+          borderTopColor: "#E2E8F0",
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: "500",
         },
       }}
@@ -128,6 +136,10 @@ function MainTabNavigator() {
 }
 
 function AdminTabNavigator() {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, 10);
+  const barHeight = 56 + bottomPadding;
+
   return (
     <AdminTabs.Navigator
       screenOptions={{
@@ -137,12 +149,15 @@ function AdminTabNavigator() {
         tabBarActiveTintColor: "#1E3A8A",
         tabBarInactiveTintColor: "#64748B",
         tabBarStyle: {
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 6,
+          height: barHeight,
+          paddingBottom: bottomPadding,
+          paddingTop: 8,
+          backgroundColor: "#FFFFFF",
+          borderTopWidth: 1,
+          borderTopColor: "#E2E8F0",
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: "500",
         },
       }}
