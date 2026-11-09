@@ -1,14 +1,66 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  Alert,
+  ScrollView,
+  Text,
+  TextInput,
+  StyleSheet,
+  View,
+} from "react-native";
+import { isAxiosError } from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { authService } from "../../services/authService";
 
 export function PerfilScreen() {
   const { user, logout, isLoading } = useAuth();
+  const [formularioVisible, setFormularioVisible] = useState(false);
+  const [contraseniaActual, setContraseniaActual] = useState("");
+  const [contraseniaNueva, setContraseniaNueva] = useState("");
+  const [confirmacion, setConfirmacion] = useState("");
+  const [cambiandoContrasenia, setCambiandoContrasenia] = useState(false);
+  const [errorContrasenia, setErrorContrasenia] = useState<string | null>(null);
+
+  async function cambiarContrasenia() {
+    setErrorContrasenia(null);
+    if (!contraseniaActual || !contraseniaNueva || !confirmacion) {
+      setErrorContrasenia("Completá los tres campos de contraseña.");
+      return;
+    }
+    if (contraseniaNueva !== confirmacion) {
+      setErrorContrasenia("La nueva contraseña y su confirmación no coinciden.");
+      return;
+    }
+
+    setCambiandoContrasenia(true);
+    try {
+      const response = await authService.changePassword({
+        currentPassword: contraseniaActual,
+        newPassword: contraseniaNueva,
+      });
+      setContraseniaActual("");
+      setContraseniaNueva("");
+      setConfirmacion("");
+      setFormularioVisible(false);
+      Alert.alert("Contraseña actualizada", response.detail);
+    } catch (err: unknown) {
+      const detail = isAxiosError<{ detail?: string | string[] }>(err)
+        ? err.response?.data?.detail
+        : undefined;
+      setErrorContrasenia(
+        Array.isArray(detail)
+          ? detail.join("\n")
+          : detail || "No se pudo cambiar la contraseña. Revisá la conexión e intentá nuevamente."
+      );
+    } finally {
+      setCambiandoContrasenia(false);
+    }
+  }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <Text style={styles.title}>Mi Perfil</Text>
         <Text style={styles.subtitle}>Información de la cuenta y sesión</Text>
@@ -52,7 +104,80 @@ export function PerfilScreen() {
           style={styles.logoutButton}
         />
       </Card>
-    </View>
+      <Card style={styles.passwordCard}>
+        <Text style={styles.passwordTitle}>Seguridad de la cuenta</Text>
+        <Text style={styles.passwordHelp}>
+          Cambiá tu contraseña actual. Por seguridad, las demás sesiones se cerrarán.
+        </Text>
+        {!formularioVisible ? (
+          <Button
+            testID="btn-mostrar-cambio-contrasenia"
+            title="Cambiar contraseña"
+            variant="outline"
+            onPress={() => {
+              setErrorContrasenia(null);
+              setFormularioVisible(true);
+            }}
+          />
+        ) : (
+          <View>
+            {errorContrasenia && <ErrorMessage message={errorContrasenia} />}
+            <TextInput
+              testID="input-contrasenia-actual"
+              accessibilityLabel="Contraseña actual"
+              style={styles.passwordInput}
+              placeholder="Contraseña actual"
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={contraseniaActual}
+              onChangeText={setContraseniaActual}
+            />
+            <TextInput
+              testID="input-contrasenia-nueva"
+              accessibilityLabel="Nueva contraseña"
+              style={styles.passwordInput}
+              placeholder="Nueva contraseña"
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={contraseniaNueva}
+              onChangeText={setContraseniaNueva}
+            />
+            <TextInput
+              testID="input-confirmar-contrasenia"
+              accessibilityLabel="Confirmar nueva contraseña"
+              style={styles.passwordInput}
+              placeholder="Confirmar nueva contraseña"
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={confirmacion}
+              onChangeText={setConfirmacion}
+            />
+            <Button
+              testID="btn-cambiar-contrasenia"
+              title="Guardar contraseña nueva"
+              onPress={() => void cambiarContrasenia()}
+              loading={cambiandoContrasenia}
+              style={styles.passwordAction}
+            />
+            <Button
+              title="Cancelar"
+              variant="secondary"
+              disabled={cambiandoContrasenia}
+              onPress={() => {
+                setFormularioVisible(false);
+                setErrorContrasenia(null);
+                setContraseniaActual("");
+                setContraseniaNueva("");
+                setConfirmacion("");
+              }}
+            />
+          </View>
+        )}
+      </Card>
+    </ScrollView>
   );
 }
 
@@ -60,6 +185,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8FAFC",
+  },
+  content: {
     padding: 16,
   },
   header: {
@@ -128,5 +255,35 @@ const styles = StyleSheet.create({
   logoutButton: {
     width: "100%",
     marginTop: 20,
+  },
+  passwordCard: {
+    padding: 20,
+    alignItems: "stretch",
+  },
+  passwordTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  passwordHelp: {
+    color: "#64748B",
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 6,
+    marginBottom: 14,
+  },
+  passwordInput: {
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    backgroundColor: "#F8FAFC",
+    color: "#0F172A",
+    marginBottom: 12,
+  },
+  passwordAction: {
+    marginBottom: 10,
   },
 });
