@@ -29,7 +29,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M11** | Extensión pagos | Pagar conceptos seleccionados de una cuota (#29, backend PR #41, app PR #31) | Alta | `terminado` | Navarro / Echeverría | El tutor selecciona conceptos completos; API persiste asignación y saldo por concepto |
 | **HU_M12** | Extensión pagos | Recibir correo al aprobar un pago (#30, backend PR #41) | Media | `terminado` | Echeverría | Correo idempotente al tutor con importe aprobado y saldo restante |
 | **CHORE-07** | Sprint 3 | Pruebas integrales en emulador y dispositivo real (#23) | Alta | `pendiente` | Navarro / Echeverría | Verificación E2E de flujos móvil + backend en sesión presencial |
-| **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `en progreso` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK instalable descargable |
+| **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `terminado` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK publicado en GitHub Releases v1.0.0 |
 | **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
 | **CHORE-09** | Sprint 3 | Identidad visual: logo institucional en login y cabecera de texto corporativa (#40, PR #39) | Media | `terminado` | Navarro | Integración de logo.png en Login y navegación con texto de marca corporativo |
 | **HU_M04-ADMIN** | Extensión HU_M04 | Validación y gestión administrativa de comprobantes en la app (#41, PR #42) | Alta | `terminado` | Navarro | Endpoints admin y pantalla interactiva de comprobantes con aprobar/rechazar |
@@ -105,7 +105,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M11 (#29):** Selección de conceptos completos al pagar; backend PR #41 y app PR #31 fusionados.
 - [x] **HU_M12 (#30):** Correo al tutor tras la aprobación administrativa, con importe y saldo restante; backend PR #41 fusionado.
 - [ ] **CHORE-07:** Pruebas integrales en emulador Android y dispositivo físico real (#23, asignado a sesión presencial Navarro / Echeverría).
-- [ ] **CHORE-08:** Compilación de APK de producción mediante EAS Build (`eas build -p android`) (#24, asignado a sesión presencial Navarro / Echeverría).
+- [x] **CHORE-08:** Compilación de APK de producción mediante EAS Build (`eas build -p android`) y publicación de Release oficial v1.0.0 con artefacto adjunto (#24).
 - [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra (#25).
 - [x] **CHORE-09 (#40, PR #39):** Identidad visual: incorporar logo institucional en login y cabecera de texto con colores de marca.
 - [x] **CHORE-10 (#46):** Logo institucional oficial como icono de la app móvil y pantalla de carga (splash screen).
