@@ -20,8 +20,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **FIX-02** | Sprint 2 | No presentar aranceles no informados como gratuitos (#13) | Media | `terminado` | Echeverría | La app distingue precios nulos y no calcula un total falso |
 | **FIX-03** | Extensión pagos | Refrescar conceptos disponibles al volver a pagar (#32, PR #33) | Alta | `terminado` | Echeverría | Al enfocar comprobantes y cada vez que se abre el formulario para una cuota, consultar el backend y mostrar saldo y estados actuales |
 | **FIX-04** | Extensión HU_M01 | Cambiar contraseña desde Mi Perfil (#34; PR #35; API backend #46 / PR #47) | Media | `terminado` | Echeverría | Validación de contraseña actual/nueva en API y revocación de otras sesiones |
-| **FIX-05** | Extensión HU_M01 | Recuperar contraseña olvidada por correo (#36; API backend #48) | Alta | `en revisión` | Echeverría | Código de un solo uso con vencimiento, cambio de contraseña desde Login y revocación de sesiones |
-| **FIX-05** | Extensión HU_M01 | Recuperar contraseña olvidada por correo (#36; API backend #48) | Alta | `en progreso` | Echeverría | Código de un solo uso, vencimiento, confirmación en app y revocación de sesiones |
+| **FIX-05** | Extensión HU_M01 | Recuperar contraseña olvidada por correo (#36; API backend #48) | Alta | `terminado` | Echeverría | Código de un solo uso con vencimiento, cambio de contraseña desde Login y revocación de sesiones (PR #37 fusionado) |
 | **HU_M06** | Sprint 3 | Recibir notificación de factura mensual emitida (#17) | Alta | `terminado` | Navarro / Echeverría | Tarea de fin de mes, cálculo discriminado, PDF adjunto (PR #31 backend fusionada) |
 | **HU_M07** | Sprint 3 | Recibir recordatorio automático de deuda (día 20) (#18) | Media | `terminado` | Navarro / Echeverría | Tarea día 20, solo a tutores con deuda, exclusión comprobantes en revisión (PR #31 backend fusionada) |
 | **HU_M08** | Sprint 3 | Consultar reportes de facturas por período (Tutor) (#19) | Media | `terminado` | Navarro | Filtro de fechas, listado de comprobantes asociados |
@@ -34,6 +33,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
 | **CHORE-09** | Sprint 3 | Identidad visual: logo institucional en login y cabecera de texto corporativa (#40, PR #39) | Media | `terminado` | Navarro | Integración de logo.png en Login y navegación con texto de marca corporativo |
 | **HU_M04-ADMIN** | Extensión HU_M04 | Validación y gestión administrativa de comprobantes en la app (#41, PR #42) | Alta | `terminado` | Navarro | Endpoints admin y pantalla interactiva de comprobantes con aprobar/rechazar |
+| **CHORE-11** | Extensión HU_M06/HU_M07 | Probar correos programados desde la app administrativa (#48; API backend #52) | Media | `en revisión` | Echeverría | Simular factura o recordatorio para un alumno y mandar una sola copia a maxecheverri9@gmail.com sin alterar cuotas ni pagos |
 
 ---
 
@@ -47,8 +47,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M01:** Almacenamiento seguro del token JWT en `expo-secure-store` y restauración de sesión (`GET /api/auth/me/`).
 - [x] **HU_M01:** Implementar cierre de sesión (`POST /api/auth/logout/`) y feedback de conexión/red.
 - [x] **FIX-04 (#34, PR #35):** Permitir cambiar la contraseña autenticado desde Mi Perfil usando `POST /api/auth/password-change/` (#46 backend, PR #47).
-- [ ] **FIX-05 (#36):** Solicitar un código de recuperación por correo y restablecer la contraseña desde Login con `POST /api/auth/password-reset/request/` y `/confirm/` (#48 backend).
-- [ ] **FIX-05 (#36):** Solicitar y confirmar recuperación de contraseña por correo usando `POST /api/auth/password-reset/request/` y `/confirm/` (#48 backend).
+- [x] **FIX-05 (#36, PR #37):** Solicitar y confirmar recuperación de contraseña por correo usando `POST /api/auth/password-reset/request/` y `/confirm/` (#48 backend).
 - [x] **TEST-01:** Pruebas automatizadas de contrato API para login y guard de navegación con Playwright.
 - **DoD Sprint 1:** `HU_M01` completada y probada en dispositivo físico real. Token JWT seguro en Keystore/Keychain. Sesión persistente funcional.
 
@@ -112,5 +111,6 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **CHORE-10 (#46):** Logo institucional oficial como icono de la app móvil y pantalla de carga (splash screen).
 - [x] **HU_M04-ADMIN (#41):** Validación y gestión de comprobantes por el administrador en la app móvil.
 - [x] **HU_M04-ADMIN (#44):** Visor de PDF integrado dentro de la app móvil para comprobantes de pago (WebView + PDF.js autónomo en el cliente).
+- [ ] **CHORE-11 (#48, API backend #52):** Simular desde administración los correos de factura y deuda, enviando una sola copia a `maxecheverri9@gmail.com` y sin modificar datos financieros.
 - **DoD Sprint 3:** 100% de las historias completadas. APK instalable generada y proyecto final entregado.
 

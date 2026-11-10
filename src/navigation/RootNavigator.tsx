@@ -15,6 +15,7 @@ import {
 } from "../screens/comprobantes/ComprobantesScreen";
 import { ServiciosScreen } from "../screens/servicios/ServiciosScreen";
 import { ReportesScreen } from "../screens/reportes/ReportesScreen";
+import { SimulacionNotificacionesScreen } from "../screens/reportes/SimulacionNotificacionesScreen";
 import { PerfilScreen } from "../screens/perfil/PerfilScreen";
 
 import {
@@ -211,6 +212,20 @@ function AdminTabNavigator() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "checkmark-done-circle" : "checkmark-done-circle-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <AdminTabs.Screen
+        name="NotificacionesPrueba"
+        component={SimulacionNotificacionesScreen}
+        options={{
+          title: "Pruebas",
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "mail" : "mail-outline"}
               size={size}
               color={color}
             />
