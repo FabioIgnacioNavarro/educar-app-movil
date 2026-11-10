@@ -110,5 +110,6 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra (#25).
 - [x] **CHORE-09 (#40, PR #39):** Identidad visual: incorporar logo institucional en login y cabecera de texto con colores de marca.
 - [x] **HU_M04-ADMIN (#41):** Validación y gestión de comprobantes por el administrador en la app móvil.
+- [x] **HU_M04-ADMIN (#44):** Visor de PDF integrado dentro de la app móvil para comprobantes de pago (WebView + PDF.js autónomo en el cliente).
 - **DoD Sprint 3:** 100% de las historias completadas. APK instalable generada y proyecto final entregado.
 

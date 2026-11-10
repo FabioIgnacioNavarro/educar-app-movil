@@ -9,8 +9,6 @@ import {
   Modal,
   TextInput,
   TouchableOpacity,
-  Image,
-  ActivityIndicator,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,6 +18,7 @@ import { Button } from "../../components/Button";
 import { StatusBadge } from "../../components/StatusBadge";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ErrorMessage } from "../../components/ErrorMessage";
+import { ComprobanteViewerModal } from "../../components/ComprobanteViewerModal";
 import { ComprobantePendienteModel } from "../../types/comprobantes";
 import { comprobantesService } from "../../services/comprobantesService";
 import { EstadoPago } from "../../types/cuota";
@@ -143,11 +142,7 @@ export function AdminComprobantesScreen() {
   }
 
   function abrirVisor(archivoUrl: string, nombreArchivo: string) {
-    const baseUrl = process.env.EXPO_PUBLIC_API_URL?.replace(/\/api\/?$/, "") || "http://10.0.2.2:8000";
-    const fullUrl = archivoUrl.startsWith("http")
-      ? archivoUrl
-      : `${baseUrl}${archivoUrl}`;
-    setViewerUrl(fullUrl);
+    setViewerUrl(archivoUrl);
     setViewerFileName(nombreArchivo);
     setViewerModalVisible(true);
   }
@@ -326,61 +321,14 @@ export function AdminComprobantesScreen() {
         </View>
       </Modal>
 
-      {/* Modal de Visor de Archivo */}
-      <Modal
+      {/* Modal de Visor de Archivo (PDF e Imágenes) */}
+      <ComprobanteViewerModal
         visible={viewerModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setViewerModalVisible(false)}
-      >
-        <View style={styles.viewerOverlay}>
-          <View style={styles.viewerContainer}>
-            <View style={styles.viewerHeader}>
-              <Text style={styles.viewerTitle} numberOfLines={1}>
-                {viewerFileName || "Comprobante"}
-              </Text>
-              <TouchableOpacity onPress={() => setViewerModalVisible(false)}>
-                <Ionicons name="close" size={26} color="#0F172A" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.viewerBody}>
-              {viewerUrl ? (
-                viewerFileName.toLowerCase().endsWith(".pdf") ? (
-                  <View style={styles.pdfNoticeContainer}>
-                    <Ionicons name="document-text" size={64} color="#DC2626" />
-                    <Text style={styles.pdfNoticeText}>
-                      Documento PDF adjunto:
-                    </Text>
-                    <Text style={styles.pdfFileName}>{viewerFileName}</Text>
-                    <Text style={styles.pdfHelpText}>
-                      El comprobante fue transferido en formato PDF y registrado en el servidor.
-                    </Text>
-                  </View>
-                ) : (
-                  <Image
-                    source={{
-                      uri: viewerUrl,
-                      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
-                    }}
-                    style={styles.viewerImage}
-                    resizeMode="contain"
-                  />
-                )
-              ) : (
-                <ActivityIndicator size="large" color="#1D66C2" />
-              )}
-            </View>
-
-            <Button
-              title="Cerrar visor"
-              variant="secondary"
-              onPress={() => setViewerModalVisible(false)}
-              style={styles.viewerCloseBtn}
-            />
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setViewerModalVisible(false)}
+        archivoUrl={viewerUrl}
+        nombreArchivo={viewerFileName}
+        authToken={authToken}
+      />
     </View>
   );
 }
@@ -593,71 +541,5 @@ const styles = StyleSheet.create({
   },
   modalConfirmBtn: {
     flex: 2,
-  },
-  viewerOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.65)",
-    justifyContent: "center",
-    padding: 16,
-  },
-  viewerContainer: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    maxHeight: "90%",
-  },
-  viewerHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
-    paddingBottom: 8,
-  },
-  viewerTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#0F172A",
-    flex: 1,
-    marginRight: 8,
-  },
-  viewerBody: {
-    minHeight: 280,
-    maxHeight: 460,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F8FAFC",
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  viewerImage: {
-    width: "100%",
-    height: "100%",
-  },
-  pdfNoticeContainer: {
-    alignItems: "center",
-    padding: 24,
-  },
-  pdfNoticeText: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#0F172A",
-    marginTop: 12,
-  },
-  pdfFileName: {
-    fontSize: 13,
-    color: "#475569",
-    marginTop: 4,
-    textAlign: "center",
-  },
-  pdfHelpText: {
-    fontSize: 12,
-    color: "#94A3B8",
-    marginTop: 12,
-    textAlign: "center",
-  },
-  viewerCloseBtn: {
-    marginTop: 14,
   },
 });
