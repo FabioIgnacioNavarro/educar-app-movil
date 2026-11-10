@@ -46,9 +46,11 @@ Se conecta en tiempo real a la API REST de producción desplegada en PythonAnywh
 
 | Atributo | Detalle |
 | :--- | :--- |
-| **Nombre del archivo** | `educar-app-movil-v1.0.0.apk` |
+| **Nombre del archivo** | `educar-para-transformar-1.0.0.apk` |
 | **Package Name** | `com.matech.educarappmovil` |
 | **Versión** | `1.0.0` (Build 1) |
+| **Tamaño del APK** | 79.25 MB (83.102.317 bytes) |
+| **Hash SHA-256** | `C2EB3B713624D1E2C54D0A2FB5C9BD95228565E89796EA419F0B886F9C4F4F65` |
 | **Framework** | Expo SDK 58 / React Native 0.88.1 |
 | **Motor JS** | Hermes Engine |
 | **Arquitecturas compatibles** | `arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64` |
@@ -59,7 +61,7 @@ Se conecta en tiempo real a la API REST de producción desplegada en PythonAnywh
 
 ## 📲 Guía de Instalación para Evaluadores / Usuarios
 
-1. Descargá el archivo adjunto **`educar-app-movil-v1.0.0.apk`** en tu teléfono Android (o desde esta misma página de Releases).
+1. Descargá el archivo adjunto **`educar-para-transformar-1.0.0.apk`** en tu teléfono Android (o desde esta misma página de Releases).
 2. Abrí el archivo descargado. Si Android te solicita autorización, activá la casilla **"Permitir la instalación de aplicaciones de esta fuente"**.
 3. Presioná **Instalar** y luego **Abrir**.
 4. Podés probar la aplicación utilizando las credenciales provistas para la cátedra:
