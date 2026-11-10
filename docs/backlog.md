@@ -30,7 +30,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M11** | Extensión pagos | Pagar conceptos seleccionados de una cuota (#29, backend PR #41, app PR #31) | Alta | `terminado` | Navarro / Echeverría | El tutor selecciona conceptos completos; API persiste asignación y saldo por concepto |
 | **HU_M12** | Extensión pagos | Recibir correo al aprobar un pago (#30, backend PR #41) | Media | `terminado` | Echeverría | Correo idempotente al tutor con importe aprobado y saldo restante |
 | **CHORE-07** | Sprint 3 | Pruebas integrales en emulador y dispositivo real (#23) | Alta | `pendiente` | Navarro / Echeverría | Verificación E2E de flujos móvil + backend en sesión presencial |
-| **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `pendiente` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK instalable descargable |
+| **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `en progreso` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK instalable descargable |
 | **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
 | **CHORE-09** | Sprint 3 | Identidad visual: logo institucional en login y cabecera de texto corporativa (#40, PR #39) | Media | `terminado` | Navarro | Integración de logo.png en Login y navegación con texto de marca corporativo |
 | **HU_M04-ADMIN** | Extensión HU_M04 | Validación y gestión administrativa de comprobantes en la app (#41, PR #42) | Alta | `terminado` | Navarro | Endpoints admin y pantalla interactiva de comprobantes con aprobar/rechazar |
