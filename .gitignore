@@ -30,6 +30,8 @@ playwright/.cache/
 # TypeScript y Build
 *.tsbuildinfo
 .metro-health-check*
+*.apk
+*.aab
 
 # Carpetas nativas generadas
 /ios
