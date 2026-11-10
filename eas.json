@@ -12,11 +12,23 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://educarparatransformar.pythonanywhere.com/api",
+        "EXPO_PUBLIC_API_TIMEOUT": "15000",
+        "EXPO_PUBLIC_APP_NAME": "Educar para Transformar",
+        "EXPO_PUBLIC_INSTITUTION_NAME": "Centro Educativo Transformar para educar"
       }
     },
     "production": {
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://educarparatransformar.pythonanywhere.com/api",
+        "EXPO_PUBLIC_API_TIMEOUT": "15000",
+        "EXPO_PUBLIC_APP_NAME": "Educar para Transformar",
+        "EXPO_PUBLIC_INSTITUTION_NAME": "Centro Educativo Transformar para educar"
       }
     }
   },
