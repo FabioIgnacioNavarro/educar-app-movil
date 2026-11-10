@@ -28,12 +28,12 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **HU_M10** | Sprint 3 | Consultar reportes administrativos móviles (Admin) (#21, #26, #27, PR #22, PR #28) | Alta | `terminado` | Navarro / Echeverría | Reportes base, período seleccionable, datos reales y desglose financiero por deporte, nivel, horario, docente y recorrido (backend PR #40 fusionado) |
 | **HU_M11** | Extensión pagos | Pagar conceptos seleccionados de una cuota (#29, backend PR #41, app PR #31) | Alta | `terminado` | Navarro / Echeverría | El tutor selecciona conceptos completos; API persiste asignación y saldo por concepto |
 | **HU_M12** | Extensión pagos | Recibir correo al aprobar un pago (#30, backend PR #41) | Media | `terminado` | Echeverría | Correo idempotente al tutor con importe aprobado y saldo restante |
-| **CHORE-07** | Sprint 3 | Pruebas integrales en emulador y dispositivo real (#23) | Alta | `pendiente` | Navarro / Echeverría | Verificación E2E de flujos móvil + backend en sesión presencial |
+| **CHORE-07** | Sprint 3 | Pruebas integrales en emulador y dispositivo real (#23) | Alta | `terminado` | Navarro / Echeverría | Verificación E2E de flujos móvil + backend en dispositivo físico real |
 | **CHORE-08** | Sprint 3 | Compilación de APK autónomo de producción (#24) | Alta | `terminado` | Navarro / Echeverría | Build con EAS (`eas build -p android`), APK publicado en GitHub Releases v1.0.0 |
-| **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
+| **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `en progreso` | Navarro / Echeverría | Redacción de memoria técnica y manual de usuario final |
 | **CHORE-09** | Sprint 3 | Identidad visual: logo institucional en login y cabecera de texto corporativa (#40, PR #39) | Media | `terminado` | Navarro | Integración de logo.png en Login y navegación con texto de marca corporativo |
 | **HU_M04-ADMIN** | Extensión HU_M04 | Validación y gestión administrativa de comprobantes en la app (#41, PR #42) | Alta | `terminado` | Navarro | Endpoints admin y pantalla interactiva de comprobantes con aprobar/rechazar |
-| **CHORE-11** | Extensión HU_M06/HU_M07 | Probar correos programados desde la app administrativa (#48, seguimiento #50; backend #52, seguimiento #56) | Media | `en revisión` | Echeverría | Confirmación indica tipo y período; copia de prueba dirigida a maxecheverri9@gmail.com |
+| **CHORE-11** | Extensión HU_M06/HU_M07 | Probar correos programados desde la app administrativa (#48, seguimiento #50; backend #52, seguimiento #56) | Media | `terminado` | Echeverría | Confirmación indica tipo y período; copia de prueba dirigida a maxecheverri9@gmail.com |
 
 ---
 
@@ -104,14 +104,14 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **HU_M10 (#27):** Desglose financiero por deporte, nivel, horario, docente y recorrido desde snapshots (backend PR #40, migración 0018; app PR móvil #28).
 - [x] **HU_M11 (#29):** Selección de conceptos completos al pagar; backend PR #41 y app PR #31 fusionados.
 - [x] **HU_M12 (#30):** Correo al tutor tras la aprobación administrativa, con importe y saldo restante; backend PR #41 fusionado.
-- [ ] **CHORE-07:** Pruebas integrales en emulador Android y dispositivo físico real (#23, asignado a sesión presencial Navarro / Echeverría).
+- [x] **CHORE-07:** Pruebas integrales en emulador Android y dispositivo físico real (#23, verificado con el APK de producción v1.0.0).
 - [x] **CHORE-08:** Compilación de APK de producción mediante EAS Build (`eas build -p android`) y publicación de Release oficial v1.0.0 con artefacto adjunto (#24).
-- [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra (#25).
+- [ ] **DOC-01:** Manual de usuario móvil y entrega final de la cátedra (#25, redacción en Word/PDF por el equipo).
 - [x] **CHORE-09 (#40, PR #39):** Identidad visual: incorporar logo institucional en login y cabecera de texto con colores de marca.
 - [x] **CHORE-10 (#46):** Logo institucional oficial como icono de la app móvil y pantalla de carga (splash screen).
 - [x] **HU_M04-ADMIN (#41):** Validación y gestión de comprobantes por el administrador en la app móvil.
 - [x] **HU_M04-ADMIN (#44):** Visor de PDF integrado dentro de la app móvil para comprobantes de pago (WebView + PDF.js autónomo en el cliente).
 - [x] **CHORE-11 (#48, PR móvil #49; API backend #52, PR #55):** Simulación de facturas y recordatorios sin modificar datos financieros.
-- [ ] **CHORE-11 seguimiento (#50; backend #56):** Ajustar los textos del correo y la confirmación mostrada en la app.
-- **DoD Sprint 3:** 100% de las historias completadas. APK instalable generada y proyecto final entregado.
+- [x] **CHORE-11 seguimiento (#50; backend #56):** Ajustar los textos del correo y la confirmación mostrada en la app.
+- **DoD Sprint 3:** 100% de las historias y tareas técnicas completadas. APK instalable generada y publicada en GitHub Releases v1.0.0.
 
