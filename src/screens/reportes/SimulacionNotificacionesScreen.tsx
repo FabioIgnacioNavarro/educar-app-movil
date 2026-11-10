@@ -147,7 +147,7 @@ export function SimulacionNotificacionesScreen() {
         />
 
         <Text style={styles.notice}>
-          Se enviará una sola copia a maxecheverri9@gmail.com. El servidor fija el destinatario; la app no permite cambiarlo. No se envía a los tutores ni se modifican cuotas o pagos.
+          Se enviará una sola copia a maxecheverri9@gmail.com.
           {tipo === "factura" ? " La copia incluye el PDF de factura." : " El recordatorio resume las deudas del tutor asociado al alumno."}
         </Text>
 
@@ -168,7 +168,7 @@ export function SimulacionNotificacionesScreen() {
           onPress={() => {
             Alert.alert(
               "Enviar correo de prueba",
-              `Se enviará una copia a maxecheverri9@gmail.com. No se enviará a los tutores.`,
+              `Se enviará un correo a maxecheverri9@gmail.com simulando el envío de ${tipo === "factura" ? "la factura de fin de mes" : "el recordatorio del día 20"} para el mes ${MESES[Number(mes) - 1]} de ${anio}.`,
               [
                 { text: "Cancelar", style: "cancel" },
                 { text: "Enviar", onPress: () => void enviarPrueba() },

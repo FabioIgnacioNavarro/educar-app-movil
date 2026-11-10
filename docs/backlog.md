@@ -33,7 +33,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 | **DOC-01** | Sprint 3 | Manual de usuario y documentación final de cátedra (#25) | Media | `pendiente` | Navarro / Echeverría | Manual ilustrado en `docs/manual_usuario.md` y memoria final |
 | **CHORE-09** | Sprint 3 | Identidad visual: logo institucional en login y cabecera de texto corporativa (#40, PR #39) | Media | `terminado` | Navarro | Integración de logo.png en Login y navegación con texto de marca corporativo |
 | **HU_M04-ADMIN** | Extensión HU_M04 | Validación y gestión administrativa de comprobantes en la app (#41, PR #42) | Alta | `terminado` | Navarro | Endpoints admin y pantalla interactiva de comprobantes con aprobar/rechazar |
-| **CHORE-11** | Extensión HU_M06/HU_M07 | Probar correos programados desde la app administrativa (#48; API backend #52) | Media | `en revisión` | Echeverría | Simular factura o recordatorio para un alumno y mandar una sola copia a maxecheverri9@gmail.com sin alterar cuotas ni pagos |
+| **CHORE-11** | Extensión HU_M06/HU_M07 | Probar correos programados desde la app administrativa (#48, seguimiento #50; backend #52, seguimiento #56) | Media | `en revisión` | Echeverría | Confirmación indica tipo y período; copia de prueba dirigida a maxecheverri9@gmail.com |
 
 ---
 
@@ -111,6 +111,7 @@ Planificación Ejecutiva: 3 Macro-Sprints Consolidados (6 Sprints Teóricos inte
 - [x] **CHORE-10 (#46):** Logo institucional oficial como icono de la app móvil y pantalla de carga (splash screen).
 - [x] **HU_M04-ADMIN (#41):** Validación y gestión de comprobantes por el administrador en la app móvil.
 - [x] **HU_M04-ADMIN (#44):** Visor de PDF integrado dentro de la app móvil para comprobantes de pago (WebView + PDF.js autónomo en el cliente).
-- [ ] **CHORE-11 (#48, API backend #52):** Simular desde administración los correos de factura y deuda, enviando una sola copia a `maxecheverri9@gmail.com` y sin modificar datos financieros.
+- [x] **CHORE-11 (#48, PR móvil #49; API backend #52, PR #55):** Simulación de facturas y recordatorios sin modificar datos financieros.
+- [ ] **CHORE-11 seguimiento (#50; backend #56):** Ajustar los textos del correo y la confirmación mostrada en la app.
 - **DoD Sprint 3:** 100% de las historias completadas. APK instalable generada y proyecto final entregado.
 
