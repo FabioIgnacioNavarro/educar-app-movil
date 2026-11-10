@@ -27,5 +27,6 @@ export type MainTabParamList = {
 export type AdminTabParamList = {
   Reportes: undefined;
   ComprobantesAdmin: undefined;
+  NotificacionesPrueba: undefined;
   Perfil: undefined;
 };

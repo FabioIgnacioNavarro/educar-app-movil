@@ -368,3 +368,13 @@ Las categorías `niveles`, `horarios`, `docentes` y `recorridos` tienen la misma
 
 Si falla una solicitud, la app debe mostrar el error de conexión/servidor y no reemplazarlo con cifras de ejemplo. Una respuesta correcta con arreglos vacíos debe mostrar un estado sin movimientos.
 
+### `POST /api/admin/notificaciones/simulacion/`
+
+Herramienta exclusiva para administración para enviar una copia de prueba de la factura mensual o del recordatorio de deuda, sin esperar la fecha programada.
+
+- **Autenticación:** `Bearer <access_token>` con rol administrativo.
+- **Destino:** fijo en el backend; no se acepta una dirección enviada desde la app. Para esta prueba, el backend solo se habilita si `ADMIN_NOTIFICATION_EMAIL` está configurado como `maxecheverri9@gmail.com`.
+- **Datos:** `{ "tipo": "factura" | "recordatorio", "mes": 11, "anio": 2026, "legajo": 31 }`.
+- La factura adjunta un PDF generado con los aranceles e inscripciones actuales del alumno de referencia. El recordatorio calcula las deudas pendientes del tutor asociado a ese alumno, en todos sus períodos, y excluye importes que ya están en revisión.
+- El endpoint manda una sola copia al correo indicado y no crea ni modifica cuotas, pagos o comprobantes. Está limitado por tasa de solicitudes en el servidor.
+
